@@ -4,7 +4,7 @@ import HomeSection from "@/components/section/public/home/page-section";
 
 const HomeContainer = () => {
   return (
-    <View className="w-full min-h-screen flex flex-col">
+    <View className="w-full min-h-screen ">
       <HomeSection />
     </View>
   );

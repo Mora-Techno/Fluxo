@@ -6,7 +6,7 @@ import { themeConfig } from "@/config/theme.config";
 
 type Theme = "light" | "dark";
 
-interface FlatColors {
+export interface FlatColors {
   background: string;
   foreground: string;
   card: string;

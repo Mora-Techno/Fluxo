@@ -26,17 +26,17 @@ export default function SectionHomePage() {
 
   return (
     <ScrollView className="bg-background relative">
-      <View className="absolute w-80 h-80 bg-primary rounded-full z-[-1] top-14 left-10 flex items-center justify-center">
+      <View className="absolute w-80 h-80 bg-primary rounded-full z-[-1] top-20 left-10 flex items-center justify-center">
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
           <Sun />
         </Animated.View>
       </View>
-      <View className="p-6 space-y-6 z-0">
+      <View className="p-6 gap-10 z-0">
         <View className=" flex items-center  justify-center ">
           <LottieView
             autoPlay
             loop
-            style={{ width: 500, height: 500 }}
+            style={{ width: 590, height: 590 }}
             source={require("../../../../assets/lottie/Tester.json")}
           />
         </View>
@@ -47,7 +47,7 @@ export default function SectionHomePage() {
             Unleash your potential through movement
           </Text>
         </View>
-        <Link href={"/(auth)/login/page"} className="w-full mt-8">
+        <Link href={"/(auth)/slice/page"} className="w-full mt-8 z-10">
           <ButtonWrapper variant={"default"} className=" w-full">
             <Text className="text-lg font-semibold ">Let`s do it</Text>
           </ButtonWrapper>

@@ -2,5 +2,11 @@
   "name": "@repo/module",
   "version": "1.0.0",
   "private": true,
-  "types": "index.ts"
+  "types": "index.ts",
+  "dependencies": {
+    "axios": "^1.13.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3"
+  }
 }
