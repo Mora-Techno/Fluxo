@@ -17,9 +17,9 @@ export default function ThemeToggle() {
     >
       <View>
         {theme === "dark" ? (
-          <Feather name="moon" size={20} color="#911DEC" />
+          <Feather name="moon" size={20} className="text-primary" />
         ) : (
-          <Feather name="sun" size={20} color="#911DEC" />
+          <Feather name="sun" size={20} className="text-primary" />
         )}
       </View>
     </Button>

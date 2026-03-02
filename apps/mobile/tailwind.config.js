@@ -19,7 +19,8 @@ module.exports = {
         primary: "rgb(var(--primary) / <alpha-value>)",
         "primary-foreground": "rgb(var(--primary-foreground) / <alpha-value>)",
         secondary: "rgb(var(--secondary) / <alpha-value>)",
-        "secondary-foreground": "rgb(var(--secondary-foreground) / <alpha-value>)",
+        "secondary-foreground":
+          "rgb(var(--secondary-foreground) / <alpha-value>)",
         muted: "rgb(var(--muted) / <alpha-value>)",
         "muted-foreground": "rgb(var(--muted-foreground) / <alpha-value>)",
         accent: "rgb(var(--accent) / <alpha-value>)",
