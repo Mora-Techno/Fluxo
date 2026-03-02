@@ -1,104 +1,57 @@
-import { Link } from "expo-router";
-import {
-  ArrowRight,
-  Home as HomeIcon,
-  Shield,
-  Smartphone,
-  Zap,
-} from "lucide-react-native";
-import { ScrollView, View } from "react-native";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Icon } from "@/components/ui/icon";
+import { ScrollView, View, Animated, Easing } from "react-native";
+import LottieView from "lottie-react-native";
 import { Text } from "@/components/ui/text";
+import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
+import Sun from "@/assets/svg/sunn";
+import { Link } from "expo-router";
+import { useEffect, useRef } from "react";
 
 export default function SectionHomePage() {
+  const rotate = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(rotate, {
+        toValue: 1,
+        duration: 5500,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ).start();
+  }, []);
+
+  const spin = rotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
   return (
-    <ScrollView className="bg-background ">
-      <View className="p-6 space-y-6">
-        <View className="items-center py-8">
-          <View className="w-20 h-20 rounded-full items-center justify-center mb-4 bg-primary/10">
-            <Icon as={HomeIcon} size={40} className="text-primary" />
-          </View>
-          <Text className="text-4xl font-bold text-center mb-2 ">Welcome</Text>
-          <Text className="text-lg text-center text-muted-foreground/60 mb-6">
-            Build amazing apps with Expo & React Native
+    <ScrollView className="bg-background relative">
+      <View className="absolute w-80 h-80 bg-primary rounded-full z-[-1] top-14 left-10 flex items-center justify-center">
+        <Animated.View style={{ transform: [{ rotate: spin }] }}>
+          <Sun />
+        </Animated.View>
+      </View>
+      <View className="p-6 space-y-6 z-0">
+        <View className=" flex items-center  justify-center ">
+          <LottieView
+            autoPlay
+            loop
+            style={{ width: 500, height: 500 }}
+            source={require("../../../../assets/lottie/Tester.json")}
+          />
+        </View>
+
+        <View className="w-full flex flex-col items-center justify-center gap-2 ">
+          <Text className="text-4xl font-bold">Judul</Text>
+          <Text className="text-2xl font-semibold text-center  ">
+            Unleash your potential through movement
           </Text>
-
-          <Button className="w-full max-w-sm">
-            <Link href={"/(auth)/login/page"}>
-              <Text className="text-primary-foreground font-semibold text-base">
-                Get Started
-              </Text>
-            </Link>
-            <Icon
-              as={ArrowRight}
-              size={20}
-              className="text-primary-foreground ml-2"
-            />
-          </Button>
         </View>
-
-        <View className="gap-2">
-          <Text className="text-2xl font-bold mb-2">Features</Text>
-
-          <Card>
-            <CardContent className="pt-6">
-              <View className="flex-row items-start">
-                <View className="w-12 h-12 rounded-full items-center justify-center bg-primary/10">
-                  <Icon as={Zap} size={24} className="text-primary" />
-                </View>
-                <View className="ml-4 flex-1">
-                  <Text className="text-lg font-semibold mb-1">
-                    Lightning Fast
-                  </Text>
-                  <Text className="text-muted-foreground/60">
-                    Built with performance in mind. Experience smooth and
-                    responsive UI.
-                  </Text>
-                </View>
-              </View>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <View className="flex-row items-start">
-                <View className="w-12 h-12 rounded-full items-center justify-center bg-primary/10">
-                  <Icon as={Shield} size={24} className="text-primary" />
-                </View>
-                <View className="ml-4 flex-1">
-                  <Text className="text-lg font-semibold mb-1">
-                    Secure & Private
-                  </Text>
-                  <Text className="text-muted-foreground/60">
-                    Your data is protected with industry-standard security
-                    measures.
-                  </Text>
-                </View>
-              </View>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <View className="flex-row items-start">
-                <View className="w-12 h-12 rounded-full items-center justify-center bg-primary/10">
-                  <Icon as={Smartphone} size={24} className="text-primary" />
-                </View>
-                <View className="ml-4 flex-1">
-                  <Text className="text-lg font-semibold mb-1">
-                    Cross-Platform
-                  </Text>
-                  <Text className="text-muted-foreground/60">
-                    Works seamlessly on iOS, Android, and Web platforms.
-                  </Text>
-                </View>
-              </View>
-            </CardContent>
-          </Card>
-        </View>
+        <Link href={"/(auth)/login/page"} className="w-full mt-8">
+          <ButtonWrapper variant={"default"} className=" w-full">
+            <Text className="text-lg font-semibold ">Let`s do it</Text>
+          </ButtonWrapper>
+        </Link>
       </View>
     </ScrollView>
   );

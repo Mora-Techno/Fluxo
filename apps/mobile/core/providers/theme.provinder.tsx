@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import { colorScheme } from "nativewind";
-
 import { themeConfig } from "@/config/theme.config";
 
 type Theme = "light" | "dark";
@@ -24,10 +23,16 @@ interface FlatColors {
   accentForeground: string;
   destructive: string;
   destructiveForeground: string;
+  warning: string;
+  warningForeground: string;
+  success: string;
+  successForeground: string;
   border: string;
   input: string;
   ring: string;
   text: string;
+  info: string;
+  infoForeground: string;
   textSecondary: string;
 }
 
@@ -63,12 +68,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     accentForeground: themeColors.accent.foreground,
     destructive: themeColors.destructive.background,
     destructiveForeground: themeColors.destructive.foreground,
+    warning: themeColors.warning.background,
+    warningForeground: themeColors.warning.foreground,
+    success: themeColors.success.background,
+    successForeground: themeColors.success.foreground,
     border: themeColors.border,
     input: themeColors.input,
     ring: themeColors.ring,
     text: themeColors.foreground,
-    textSecondary:
-      theme === "dark" ? "rgba(245, 234, 255, 0.6)" : "rgba(145, 29, 236, 0.6)",
+    info: themeColors.info.background,
+    infoForeground: themeColors.info.foreground,
+    textSecondary: themeColors.muted.foreground,
   };
 
   useEffect(() => {

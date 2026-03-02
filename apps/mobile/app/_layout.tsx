@@ -17,7 +17,7 @@ function RootLayoutContent() {
       headerTintColor: colors.text,
       headerRight: () => <ThemeToggle />,
     }),
-    [colors.background, colors.card, colors.text, isDark]
+    [colors.background, colors.card, colors.text, isDark],
   );
 
   return (
