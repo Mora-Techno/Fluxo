@@ -7,13 +7,20 @@ class AuthRouter {
   public authRouter;
 
   constructor() {
-    this.authRouter = new Elysia({ prefix: '/auth' });
+    this.authRouter = new Elysia({ prefix: '/auth' }).derive(() => ({
+      json(data: any, status = 200) {
+        return new Response(JSON.stringify(data), {
+          status,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      },
+    }));
     this.routes();
   }
 
   private routes() {
-    this.authRouter.post('/login', (c: AppContext) => AuthController.login(c));
-    this.authRouter.post('/', (c: AppContext) => AuthController.register(c));
+    this.authRouter.post('/', (c: AppContext) => AuthController.login(c));
+    this.authRouter.post('/register', (c: AppContext) => AuthController.register(c));
     this.authRouter.post('/logout', (c: AppContext) => AuthController.logout(c), {
       beforeHandle: [verifyToken().beforeHandle],
     });

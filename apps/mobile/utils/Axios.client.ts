@@ -8,6 +8,6 @@ import { store } from "@/stores/store";
 
 setBaseURLProvider(() => Constants.expoConfig?.extra?.BACKEND_URL);
 
-setTokenProvider(() => store.getState().auth.currentUser?.user.token);
+setTokenProvider(() => store.getState().auth.token!);
 
 export default AxiosClient;

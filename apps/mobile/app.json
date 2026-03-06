@@ -9,7 +9,11 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dikizy.Native",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,14 +24,19 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "package": "com.dikizy.Native"
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "extra": {
-      "BACKEND_URL": "http://10.0.2.2:5000"
+      "BACKEND_URL": "http://10.0.2.2:5000",
+      "router": {},
+      "eas": {
+        "projectId": "70a9d113-d300-46cc-a421-d7b148cc60c6"
+      }
     },
     "plugins": [
       "expo-router",

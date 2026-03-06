@@ -4,11 +4,11 @@ import { TResponse } from "../../utils/trespone";
 
 class AuthApi {
   public async Register(payload: PickRegister): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/auth/", payload);
+    const res = await AxiosClient.post("/api/auth/register", payload);
     return res.data;
   }
   public async Login(payload: FormLogin): Promise<TResponse<any>> {
-    const res = await AxiosClient.post("/api/auth/login", payload);
+    const res = await AxiosClient.post("/api/auth/", payload);
     return res.data;
   }
   public async Logout(): Promise<TResponse<any>> {

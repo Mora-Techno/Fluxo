@@ -7,27 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id         String   @id @default(uuid())
-  title      String   @db.VarChar(255)
-  content    String?
-  created_at DateTime @default(now())
+model User {
+  id            String        @id @default(uuid())
+  email         String?       @unique
+  password      String?
+  phone         String?       @unique
+  token         String?
+  role          RoleType
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  otp           String?
+  expOtp        DateTime?
+  isVerify      Boolean       @default(false)
+  activateToken String?
+  activateExp   DateTime?
+  first_name    String
+  last_name     String
+  session       UserSession[]
+  category Category[]
 
-  @@map("posts")
+  @@map("users")
 }
 
-model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  fullName  String
-  password  String
-  token     String?
-  role      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  otp       String?
-  expOtp    DateTime?
-  isVerify  Boolean?
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  userAgent String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  ipAddress String
+  user      User     @relation(fields: [userId], references: [id])
 
-  @@map("User")
+  @@index([userId])
+  @@map("user_sessions")
+}
+
+model Category {
+  id String @id @default(uuid())
+  userId String
+  title String
+  desc String
+  avatarCategoryUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  user User @relation(fields: [userId],references: [id])
+  @@index([userId])
+  @@map("Category")
+}
+
+enum RoleType {
+  USER
+  ADMIN
 }

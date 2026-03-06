@@ -7,6 +7,7 @@ import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import React from "react";
 import { FormLogin } from "../../../../../module/@types/auth.types";
+import { Link } from "expo-router";
 
 interface LoginSectionProps {
   namespace: {
@@ -32,14 +33,14 @@ const LoginSection: React.FC<LoginSectionProps> = ({
   return (
     <ScrollView className="relative">
       <View className="w-full min-h-screen flex items-center justify-start flex-col gap-20">
-        <View className="w-full flex-row  gap-2">
+        <View className="w-full flex-row  ">
           <ChevronLeft
             color={namespace.theme.foreground}
             width={30}
             height={30}
             onPress={() => namespace.router.back()}
           />
-          <Text className="text-2xl font-light">Back</Text>
+          <Text className="text-2xl font-bold">Back</Text>
         </View>
         <View className="w-full">
           <Text className="text-5xl font-extrabold text-primary">
@@ -47,9 +48,19 @@ const LoginSection: React.FC<LoginSectionProps> = ({
           </Text>
         </View>
         <View className="w-full gap-10">
-          <InputWrapper placeholder="Email or Phone Number" />
+          <InputWrapper
+            placeholder="Email or Phone Number"
+            value={state.formLogin.identifer}
+            onChangeText={(e) =>
+              state.setFormLogin((prev) => ({
+                ...prev,
+                identifer: e,
+              }))
+            }
+          />
           <InputWrapper
             placeholder="Password"
+            secureTextEntry={true}
             value={state.formLogin.password}
             onChangeText={(e) =>
               state.setFormLogin((prev) => ({
@@ -59,13 +70,15 @@ const LoginSection: React.FC<LoginSectionProps> = ({
             }
           />
         </View>
-        <View className="w-full gap-10 flex justify-center">
+        <View className="w-full gap-5 flex justify-center">
           <ButtonWrapper onPress={() => service.mutation.login()}>
-            <Text>Login</Text>
+            <Text className="font-bold">Login</Text>
           </ButtonWrapper>
-          <Text className="w-full text-center text-lg font-semibold text-primary">
-            Forget Password
-          </Text>
+          <Link href={"/forgotPassword/page"}>
+            <Text className="w-full text-center text-lg font-semibold text-primary">
+              Forget Password
+            </Text>
+          </Link>
         </View>
       </View>
     </ScrollView>

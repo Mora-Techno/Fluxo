@@ -8,8 +8,15 @@ export function useRegister() {
     mutationFn: (payload) => Api.Auth.Register(payload),
   });
 }
+
 export function useLogin() {
   return useMutation<TResponse<any>, Error, FormLogin>({
     mutationFn: (payload) => Api.Auth.Login(payload),
+  });
+}
+
+export function useLogout() {
+  return useMutation<TResponse<any>, Error, any>({
+    mutationFn: () => Api.Auth.Logout(),
   });
 }

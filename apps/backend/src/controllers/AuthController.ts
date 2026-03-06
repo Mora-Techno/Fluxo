@@ -15,7 +15,6 @@ import { generateOtp } from '@/utils/generate-otp';
 import { sendOTPEmail } from '@/utils/mailer';
 import { OAuth2Client } from 'google-auth-library';
 import { env } from '@/config/env.config';
-import axios from 'axios';
 import { sanitizeUser } from '@/utils/sanitize';
 
 // const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
@@ -25,7 +24,7 @@ class AuthController {
     try {
       const auth = c.body as PickRegister;
       const { email, phone } = auth;
-      if (!auth.fullName || !auth.password) {
+      if (!auth.first_name || !auth.last_name || !auth.password) {
         return c.json?.({ status: 400, message: 'All fields are required' }, 400);
       }
 
@@ -57,11 +56,12 @@ class AuthController {
         const otpExpiress = new Date(Date.now() + 5 * 60 * 1000);
         newUsers = await prisma.user.create({
           data: {
-            fullName: auth.fullName,
+            first_name: auth.first_name,
+            last_name: auth.last_name,
             password: hashedPassword,
-            role: auth.role || 'PARENT',
+            role: auth.role || 'USER',
             email: auth.email,
-            phone: auth.phone,
+            phone: auth.phone ?? '',
             otp: otp,
             expOtp: otpExpiress,
             isVerify: false,
@@ -72,7 +72,7 @@ class AuthController {
           {
             status: 201,
             message: 'successfully registered using email',
-            data: sanitizeUser(newUsers),
+            data: newUsers,
           },
           201,
         );
@@ -80,10 +80,12 @@ class AuthController {
       if (phone) {
         newUsers = await prisma.user.create({
           data: {
-            fullName: auth.fullName,
+            first_name: auth.first_name,
+            last_name: auth.last_name,
             password: hashedPassword,
+            email: auth.email ?? '',
             phone: phone,
-            role: auth.role || 'PARENT',
+            role: auth.role || 'USER',
             isVerify: true,
           },
         });
@@ -91,7 +93,7 @@ class AuthController {
           {
             status: 201,
             message: 'successfully registered using phone',
-            data: sanitizeUser(newUsers),
+            data: newUsers,
           },
           201,
         );
@@ -351,7 +353,7 @@ class AuthController {
         return c.json?.(
           {
             status: 200,
-            data: sanitizeUser(newForgot),
+            data: newForgot,
             message: 'successfully found email',
           },
           200,
@@ -367,7 +369,7 @@ class AuthController {
           {
             status: 200,
             message: 'successfully found phone',
-            data: newForgot ? sanitizeUser(newForgot) : null,
+            data: newForgot ?? null,
           },
           200,
         );
@@ -432,7 +434,7 @@ class AuthController {
         {
           status: 200,
           message: 'OTP verified successfully',
-          data: sanitizeUser(updateUser),
+          data: updateUser,
         },
         200,
       );
@@ -491,7 +493,7 @@ class AuthController {
         {
           status: 200,
           message: 'OTP resent successfully',
-          data: sanitizeUser(newOtp),
+          data: newOtp,
         },
         200,
       );
@@ -565,7 +567,7 @@ class AuthController {
         {
           status: 200,
           message: 'Password reset successfully',
-          data: sanitizeUser(newPassword),
+          data: newPassword,
         },
         200,
       );
