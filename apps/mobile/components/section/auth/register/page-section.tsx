@@ -3,9 +3,11 @@ import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { FlatColors } from "@/core/providers/theme.provinder";
 import { Router } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import { ScrollView, View, Text } from "react-native";
-import { FormRegister } from "../../../../../module/@types/auth.types";
+import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import { FormRegister } from "@repo/shared";
 import React from "react";
+import { EyeOff } from "lucide-react-native";
+import { Eye } from "lucide-react-native";
 
 interface RegisterSectionProps {
   ns: {
@@ -15,6 +17,8 @@ interface RegisterSectionProps {
   state: {
     formRegister: FormRegister;
     setFormRegister: React.Dispatch<React.SetStateAction<FormRegister>>;
+    switch: boolean;
+    setSwitch: React.Dispatch<React.SetStateAction<boolean>>;
   };
   service: {
     mutation: {
@@ -77,6 +81,16 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({
           />
           <InputWrapper
             placeholder="Password"
+            secureTextEntry={!state.switch}
+            rightIcon={
+              <TouchableOpacity onPress={() => state.setSwitch(!state.switch)}>
+                {state.switch ? (
+                  <Eye className={ns.theme.foreground} />
+                ) : (
+                  <EyeOff className={ns.theme.foreground} />
+                )}
+              </TouchableOpacity>
+            }
             value={state.formRegister.password}
             onChangeText={(e) =>
               state.setFormRegister((prev) => ({

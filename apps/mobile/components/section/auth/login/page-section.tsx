@@ -6,11 +6,11 @@ import { FlatColors } from "@/core/providers/theme.provinder";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import React from "react";
-import { FormLogin } from "../../../../../module/@types/auth.types";
+import { FormLogin } from "@repo/shared";
 import { Link } from "expo-router";
 
 interface LoginSectionProps {
-  namespace: {
+  ns: {
     router: Router;
     theme: FlatColors;
   };
@@ -25,20 +25,16 @@ interface LoginSectionProps {
     setFormLogin: React.Dispatch<React.SetStateAction<FormLogin>>;
   };
 }
-const LoginSection: React.FC<LoginSectionProps> = ({
-  namespace,
-  state,
-  service,
-}) => {
+const LoginSection: React.FC<LoginSectionProps> = ({ ns, state, service }) => {
   return (
     <ScrollView className="relative">
       <View className="w-full min-h-screen flex items-center justify-start flex-col gap-20">
         <View className="w-full flex-row  ">
           <ChevronLeft
-            color={namespace.theme.foreground}
+            color={ns.theme.foreground}
             width={30}
             height={30}
-            onPress={() => namespace.router.back()}
+            onPress={() => ns.router.back()}
           />
           <Text className="text-2xl font-bold">Back</Text>
         </View>

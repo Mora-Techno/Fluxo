@@ -27,7 +27,7 @@ function InputWrapper({
       />
 
       {rightIcon && (
-        <View className="absolute inset-y-0 right-3 flex items-center text-muted-foreground">
+        <View className="absolute inset-y-0 right-3 top-2 flex items-center text-muted-foreground">
           {rightIcon}
         </View>
       )}

@@ -2,7 +2,7 @@ import RegisterSection from "@/components/section/auth/register/page-section";
 import { useAppNameSpace } from "@/hooks/costum/namespace";
 import { View } from "react-native";
 import { useState } from "react";
-import { FormRegister } from "../../../../../module/@types/auth.types";
+import { FormRegister } from "@repo/shared";
 import { useServiceMobile } from "@/hooks/service/module/useService";
 
 const RegisterContainer = () => {
@@ -20,6 +20,8 @@ const RegisterContainer = () => {
     password: "",
     role: "USER",
   });
+
+  const [switching, setSwitching] = useState<boolean>(false);
 
   //handler
   const handlerRegister = async () => {
@@ -41,6 +43,8 @@ const RegisterContainer = () => {
         state={{
           formRegister: formRegister,
           setFormRegister: setFormRegister,
+          setSwitch: setSwitching,
+          switch: switching,
         }}
       />
     </View>

@@ -2,7 +2,7 @@ import { View } from "react-native";
 import LoginSection from "@/components/section/auth/login/page-section";
 import { useAppNameSpace } from "@/hooks/costum/namespace";
 import { useState } from "react";
-import { FormLogin } from "../../../../../module/@types/auth.types";
+import { FormLogin } from "@repo/shared";
 import { useServiceMobile } from "@/hooks/service/module/useService";
 
 const LoginContainer = () => {
@@ -24,7 +24,7 @@ const LoginContainer = () => {
   return (
     <View className="w-full min-h-screen ">
       <LoginSection
-        namespace={{
+        ns={{
           router: namespace.router,
           theme: namespace.colors,
         }}
