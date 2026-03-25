@@ -1,7 +1,7 @@
-import { View } from "react-native";
+import { Keyboard, View } from "react-native";
 import LoginSection from "@/components/section/auth/login/page-section";
 import { useAppNameSpace } from "@/hooks/costum/namespace";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FormLogin } from "@repo/shared";
 import { useServiceMobile } from "@/hooks/service/module/useService";
 
@@ -16,21 +16,42 @@ const LoginContainer = () => {
     identifer: "",
     password: "",
   });
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
 
+  // handler
   const handlerLogin = async () => {
     await loginMutation.login(formLogin);
   };
 
+  // async
+  useEffect(() => {
+    const showListener = Keyboard.addListener("keyboardWillShow", () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideListener = Keyboard.addListener("keyboardWillHide", () =>
+      setIsKeyboardVisible(false),
+    );
+    return () => {
+      showListener.remove(), hideListener.remove();
+    };
+  }, []);
+
+  const lottieSize = useMemo(
+    () => (isKeyboardVisible ? 145 : 305),
+    [isKeyboardVisible],
+  );
   return (
     <View className="w-full min-h-screen ">
       <LoginSection
         ns={{
-          router: namespace.router,
           theme: namespace.colors,
         }}
         state={{
           formLogin: formLogin,
           setFormLogin: setFormLogin,
+          isKeyboardVisible: isKeyboardVisible,
+          setIsKeyboardVisible: setIsKeyboardVisible,
+          lottieSize: lottieSize,
         }}
         service={{
           mutation: {

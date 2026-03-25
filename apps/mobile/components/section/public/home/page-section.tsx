@@ -37,7 +37,7 @@ export default function SectionHomePage() {
             autoPlay
             loop
             style={{ width: 590, height: 590 }}
-            source={require("../../../../assets/lottie/Tester.json")}
+            source={require("@/assets/lottie/Tester.json")}
           />
         </View>
 

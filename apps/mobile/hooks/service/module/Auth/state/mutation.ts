@@ -91,7 +91,7 @@ export function useRegisterService() {
     }
     registerMutation.mutate(payload, {
       onSuccess: (res) => {
-        const email = res.data;
+        const email = res.data.email as string;
 
         if (!email) {
           ns.router.push({
@@ -102,7 +102,7 @@ export function useRegisterService() {
             pathname: "/(auth)/verifikasi/page",
             params: {
               target: "/login/page",
-              email: email,
+              identifer: email,
               point: "register",
             },
           });
@@ -185,7 +185,7 @@ export function useVerifyService() {
 
     Verifikasi.mutateAsync(payload, {
       onSuccess: (res) => {
-        const { email } = res.data;
+        const email = res.data.email as string;
         ns.alert.toast({
           title: "successfully",
           message: `you succesfuly verify email:${email}`,
@@ -221,7 +221,7 @@ export function useResendService() {
 
     resend.mutate(formResend, {
       onSuccess: (res) => {
-        const { email } = res.data;
+        const email = res.data.email as string;
 
         ns.alert.toast({
           title: "successfully",
@@ -268,7 +268,7 @@ export function useForgotPasswordService() {
 
     forgot.mutate(payload, {
       onSuccess: (res) => {
-        const { email } = res.data;
+        const email = res.data.email as string;
         if (!email) {
           ns.router.push({
             pathname: "/(auth)/forgotPassword/page",
@@ -278,7 +278,7 @@ export function useForgotPasswordService() {
             pathname: "/(auth)/verifikasi/page",
             params: {
               target: "/(auth)/reset-password/page",
-              email: email,
+              identifer: email,
               point: "forgotPassword",
             },
           });

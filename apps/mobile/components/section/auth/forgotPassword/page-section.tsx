@@ -2,13 +2,12 @@ import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { FlatColors } from "@/core/providers/theme.provinder";
 import { FormForgotPassword } from "@repo/shared";
-import { Router } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import { ScrollView, View, Text } from "react-native";
+
+import { View, Text } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 interface ForgotPasswordSectionProps {
   ns: {
-    router: Router;
     theme: FlatColors;
   };
   state: {
@@ -16,6 +15,8 @@ interface ForgotPasswordSectionProps {
     setFormForgotPassword: React.Dispatch<
       React.SetStateAction<FormForgotPassword>
     >;
+    isKeyboardVisible: boolean;
+    setIsKeyBoardVisible: React.Dispatch<React.SetStateAction<boolean>>;
   };
   service: {
     mutate: {
@@ -30,37 +31,49 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({
   service,
 }) => {
   return (
-    <ScrollView className="relative">
-      <View className="w-full min-h-screen flex items-center justify-start flex-col gap-20">
-        <View className="w-full flex-row  gap-2">
-          <ChevronLeft
-            color={ns.theme.foreground}
-            width={30}
-            height={30}
-            onPress={() => ns.router.back()}
-          />
-          <Text className="text-2xl font-bold text-foreground">Back</Text>
-        </View>
-        <View className="w-full gap-2">
-          <Text className="font-bold text-4xl">Verifikasi Akun Anda</Text>
-          <InputWrapper
-            placeholder="Masukkan Email/Nomor Hp"
-            onChangeText={(e) =>
-              state.setFormForgotPassword((prev) => ({
-                ...prev,
-                identifer: e,
-              }))
-            }
-          />
-          <ButtonWrapper
-            disabled={service.mutate.isPending}
-            onPress={() => service.mutate.onForgotPassword()}
-          >
-            <Text className="font-bold">Verify</Text>
-          </ButtonWrapper>
+    <KeyboardAwareScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: state.isKeyboardVisible ? "flex-start" : "center",
+        alignItems: "center",
+      }}
+      showsHorizontalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid={true}
+      extraScrollHeight={24}
+      style={{ flex: 1, backgroundColor: "transparent" }}
+    >
+      <View
+        className="items-center w-full  px-6"
+        style={{ paddingVertical: state.isKeyboardVisible ? 20 : 48 }}
+      >
+        <View
+          className="items-center w-full"
+          style={{ marginBottom: state.isKeyboardVisible ? 20 : 40 }}
+        >
+          <View className="w-full gap-2">
+            <Text className="font-bold text-4xl text-primary">
+              Verifikasi Akun Anda
+            </Text>
+            <InputWrapper
+              placeholder="Masukkan Email/Nomor Hp"
+              onChangeText={(e) =>
+                state.setFormForgotPassword((prev) => ({
+                  ...prev,
+                  identifer: e,
+                }))
+              }
+            />
+            <ButtonWrapper
+              disabled={service.mutate.isPending}
+              onPress={() => service.mutate.onForgotPassword()}
+            >
+              <Text className="font-bold">Contine</Text>
+            </ButtonWrapper>
+          </View>
         </View>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
