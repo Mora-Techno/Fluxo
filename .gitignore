@@ -9,3 +9,5 @@
 /apps/web/.turbo
 /apps/backend/.turbo
 /apps/mobile/.turbo
+.venv
+/apps/service/__pycache__

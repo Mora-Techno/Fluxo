@@ -1,7 +1,7 @@
 import { PickResetPassword } from "@repo/shared";
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
-import { Eye, EyeOff, LockKeyhole } from "lucide-react-native";
+import { Eye, EyeOff } from "lucide-react-native";
 import LottieView from "lottie-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";

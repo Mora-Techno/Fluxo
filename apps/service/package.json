@@ -1,0 +1,8 @@
+{
+  "name": "service",
+  "private": true,
+  "scripts": {
+    "dev": "../../.venv/bin/python -m uvicorn app:app --reload --port 8000",
+    "test": "python -m pytest tests/ -v"
+  }
+}
