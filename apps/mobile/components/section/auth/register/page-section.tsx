@@ -1,12 +1,14 @@
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { FlatColors } from "@/core/providers/theme.provinder";
-import { ScrollView, View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { FormRegister } from "@repo/shared";
 import React from "react";
 import { EyeOff } from "lucide-react-native";
 import { Eye } from "lucide-react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Link } from "expo-router";
+import { Image } from "expo-image";
 
 interface RegisterSectionProps {
   ns: {
@@ -43,42 +45,57 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({
       keyboardShouldPersistTaps="handled"
       enableOnAndroid={true}
       extraScrollHeight={24}
-      style={{ flex: 1, backgroundColor: "transparent" }}
+      style={{ flex: 1, backgroundColor: ns.theme.background }}
     >
       <View
-        className="items-center w-full "
+        className="items-center w-full px-6 "
         style={{ paddingVertical: state.isKeyboardVisible ? 20 : 48 }}
       >
         <View
           className="items-center w-full gap-6"
           style={{ marginBottom: state.isKeyboardVisible ? 20 : 40 }}
         >
-          <View className="w-full">
+          <View className="w-full flex items-center">
             <Text className="text-5xl font-extrabold text-primary">
-              Createyour account
+              Create your account
             </Text>
+            <Image
+              source={require("@/assets/logo/Fluxo.png")}
+              style={{ width: 160, height: 160 }}
+              contentFit="contain"
+            />
           </View>
+
           <View className="w-full gap-10">
-            <InputWrapper
-              placeholder="First Name"
-              value={state.formRegister.first_name}
-              onChangeText={(e) =>
-                state.setFormRegister((prev) => ({
-                  ...prev,
-                  first_name: e,
-                }))
-              }
-            />
-            <InputWrapper
-              placeholder="Last Name"
-              value={state.formRegister.last_name}
-              onChangeText={(e) =>
-                state.setFormRegister((prev) => ({
-                  ...prev,
-                  last_name: e,
-                }))
-              }
-            />
+            <View className="flex-row w-full gap-4">
+              <View className="flex-1">
+                <Text className="text-primary font-light">First Name</Text>
+                <InputWrapper
+                  placeholder="joe"
+                  value={state.formRegister.first_name}
+                  onChangeText={(e) =>
+                    state.setFormRegister((prev) => ({
+                      ...prev,
+                      first_name: e,
+                    }))
+                  }
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="text-primary font-light">Last Name</Text>
+                <InputWrapper
+                  placeholder="nardi"
+                  value={state.formRegister.last_name}
+                  onChangeText={(e) =>
+                    state.setFormRegister((prev) => ({
+                      ...prev,
+                      last_name: e,
+                    }))
+                  }
+                />
+              </View>
+            </View>
+
             <InputWrapper
               placeholder="Email or Phone Number"
               value={state.formRegister.identifer}
@@ -125,11 +142,17 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({
             <Text className="text-center text-lg font-light text-foreground">
               By clicking “Create Account” your email address will be saved as
               your sign in account and you agree to our{" "}
-              <Text className="text-destructive font-bold">
-                Term & Conditions
-              </Text>{" "}
+              <Link href={"/(general)/term/page"}>
+                <Text className="text-destructive font-bold">
+                  Term & Conditions
+                </Text>{" "}
+              </Link>
               and{" "}
-              <Text className="text-destructive font-bold">Privacy Policy</Text>
+              <Link href={"/(general)/policy/page"}>
+                <Text className="text-destructive font-bold">
+                  Privacy Policy
+                </Text>
+              </Link>
             </Text>
           </View>
         </View>

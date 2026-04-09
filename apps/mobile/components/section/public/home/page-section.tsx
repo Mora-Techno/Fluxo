@@ -47,7 +47,7 @@ export default function SectionHomePage() {
             Unleash your potential through movement
           </Text>
         </View>
-        <Link href={"/(auth)/slice/page"} className="w-full mt-8 z-10">
+        <Link href={"/(auth)/login/page"} className="w-full mt-8 z-10">
           <ButtonWrapper variant={"default"} className=" w-full">
             <Text className="text-lg font-semibold ">Let`s do it</Text>
           </ButtonWrapper>

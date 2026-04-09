@@ -2,17 +2,18 @@
   "name": "mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "packageManager": "bun@1.3.1",
   "scripts": {
-    "start": "expo start",
-    "dev": "pnpm generate:theme-css && expo start --clear --go ",
-    "reset-project": "node ./scripts/reset-project.js",
-    "build:android": "eas build --platform android",
-    "build:ios": "eas build --platform ios",
-    "generate:theme-css": "node ./scripts/generate-theme-css.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "lint": "eslint ."
+    "start": "bun x expo start",
+    "dev": "bun run generate:theme-css && bun x expo start --clear --go",
+    "reset-project": "bun ./scripts/reset-project.js",
+    "build:android": "bun x eas build --platform android",
+    "build:ios": "bun x eas build --platform ios",
+    "generate:theme-css": "bun ./scripts/generate-theme-css.js",
+    "android": "bun x expo start --android",
+    "ios": "bun x expo start --ios",
+    "web": "bun x expo start --web",
+    "lint": "bun x eslint ."
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -69,10 +70,12 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.28.6",
     "@tailwindcss/postcss": "^4.1.15",
     "@types/react": "~19.1.0",
     "autoprefixer": "^10.4.21",
     "babel-plugin-module-resolver": "^5.0.2",
+    "babel-preset-expo": "54",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",

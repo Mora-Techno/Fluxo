@@ -8,6 +8,8 @@ import { useServiceMobile } from "@/hooks/service/module/useService";
 const LoginContainer = () => {
   const namespace = useAppNameSpace();
   const service = useServiceMobile();
+  // type
+  type render = "email" | "phone";
 
   // mutate
   const loginMutation = service.auth.mutation.login();
@@ -16,8 +18,10 @@ const LoginContainer = () => {
     identifer: "",
     password: "",
   });
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
 
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
+  const [render, setRender] = useState<render>("email");
+  const [switching, setSwitching] = useState<boolean>(false);
   // handler
   const handlerLogin = async () => {
     await loginMutation.login(formLogin);
@@ -32,7 +36,7 @@ const LoginContainer = () => {
       setIsKeyboardVisible(false),
     );
     return () => {
-      showListener.remove(), hideListener.remove();
+      (showListener.remove(), hideListener.remove());
     };
   }, []);
 
@@ -52,6 +56,10 @@ const LoginContainer = () => {
           isKeyboardVisible: isKeyboardVisible,
           setIsKeyboardVisible: setIsKeyboardVisible,
           lottieSize: lottieSize,
+          render: render,
+          setRender: setRender,
+          setSwitching: setSwitching,
+          switching: switching,
         }}
         service={{
           mutation: {

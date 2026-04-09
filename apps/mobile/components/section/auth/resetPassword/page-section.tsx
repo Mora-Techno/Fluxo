@@ -5,8 +5,12 @@ import { Eye, EyeOff } from "lucide-react-native";
 import LottieView from "lottie-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { FlatColors } from "@/core/providers/theme.provinder";
 
 interface ResetPasswordSectionProps {
+  ns: {
+    theme: FlatColors;
+  };
   state: {
     isKeyboardVisible: boolean;
     setIsKeyboardVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,6 +35,7 @@ interface ResetPasswordSectionProps {
 }
 const ResetPasswordSection: React.FC<ResetPasswordSectionProps> = ({
   state,
+  ns,
   service,
 }) => {
   const hasMinLength = state.formResetPassword.password.trim().length >= 8;
@@ -51,7 +56,7 @@ const ResetPasswordSection: React.FC<ResetPasswordSectionProps> = ({
       keyboardShouldPersistTaps="handled"
       enableOnAndroid={true}
       extraScrollHeight={24}
-      style={{ flex: 1, backgroundColor: "transparent" }}
+      style={{ flex: 1, backgroundColor: ns.theme.background }}
     >
       <View
         className="items-center w-full px-6"

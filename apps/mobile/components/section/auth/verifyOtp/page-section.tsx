@@ -6,10 +6,12 @@ import React from "react";
 import { View, Text } from "react-native";
 import LottieView from "lottie-react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { FlatColors } from "@/core/providers/theme.provinder";
 
 interface VerifyOtpSectionProps {
   ns: {
     route: Router;
+    theme: FlatColors;
   };
   state: {
     formVerifify: PickVerify;
@@ -48,7 +50,7 @@ const VerifyOtpSection: React.FC<VerifyOtpSectionProps> = ({
       keyboardShouldPersistTaps="handled"
       enableOnAndroid={true}
       extraScrollHeight={24}
-      style={{ flex: 1, backgroundColor: "transparent" }}
+      style={{ flex: 1, backgroundColor: ns.theme.background }}
     >
       <View
         className="items-center w-full max-w-md px-6"

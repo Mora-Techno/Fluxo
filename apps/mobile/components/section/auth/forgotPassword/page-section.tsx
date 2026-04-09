@@ -41,7 +41,7 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({
       keyboardShouldPersistTaps="handled"
       enableOnAndroid={true}
       extraScrollHeight={24}
-      style={{ flex: 1, backgroundColor: "transparent" }}
+      style={{ flex: 1, backgroundColor: ns.theme.background }}
     >
       <View
         className="items-center w-full  px-6"

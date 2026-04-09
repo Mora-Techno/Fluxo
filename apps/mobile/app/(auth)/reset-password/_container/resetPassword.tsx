@@ -53,7 +53,7 @@ const ResetPasswordContainer = () => {
       setIsKeyboardVisible(false),
     );
     return () => {
-      showListener.remove(), hideListener.remove();
+      (showListener.remove(), hideListener.remove());
     };
   }, []);
 
@@ -65,6 +65,9 @@ const ResetPasswordContainer = () => {
   return (
     <View className="w-full min-h-screen">
       <ResetPasswordSection
+        ns={{
+          theme: ns.colors,
+        }}
         state={{
           isKeyboardVisible: isKeyboardVisible,
           setIsKeyboardVisible: setIsKeyboardVisible,

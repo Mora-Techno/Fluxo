@@ -105,6 +105,7 @@ const VerifyOtpContainer = () => {
       <VerifyOtpSection
         ns={{
           route: ns.router,
+          theme: ns.colors,
         }}
         state={{
           formVerifify: formVerifify,
