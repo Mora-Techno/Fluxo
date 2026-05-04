@@ -16,6 +16,7 @@ import { sendOTPEmail } from '@/utils/mailer';
 import { OAuth2Client } from 'google-auth-library';
 import { env } from '@/config/env.config';
 import { sanitizeUser } from '@/utils/sanitize';
+import { HttpResponse } from '@/http';
 
 // const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -29,13 +30,7 @@ class AuthController {
       }
 
       if (!auth.email && !auth.phone) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'email or phone is required',
-          },
-          400,
-        );
+        return HttpResponse(c).badRequest();
       }
 
       const isAlreadyRegistered = await prisma.user.findFirst({
@@ -68,14 +63,7 @@ class AuthController {
           },
         });
         await sendOTPEmail(email, otp);
-        return c.json?.(
-          {
-            status: 201,
-            message: 'successfully registered using email',
-            data: newUsers,
-          },
-          201,
-        );
+        return HttpResponse(c).created('Create new user using email');
       }
       if (phone) {
         newUsers = await prisma.user.create({
@@ -89,32 +77,12 @@ class AuthController {
             isVerify: true,
           },
         });
-        return c.json?.(
-          {
-            status: 201,
-            message: 'successfully registered using phone',
-            data: newUsers,
-          },
-          201,
-        );
+        return HttpResponse(c).created('Create new user using phone');
       }
-      return c.json?.(
-        {
-          status: 400,
-          message: 'Invalid register request',
-        },
-        400,
-      );
+      return HttpResponse(c).badRequest('Invalid register request');
     } catch (error) {
       console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'Server Internal Error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
+      return HttpResponse(c).internalError(error);
     }
   }
 
@@ -226,14 +194,7 @@ class AuthController {
       );
     } catch (error) {
       console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'Internal server error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
+      return HttpResponse(c).internalError(error);
     }
   }
 
@@ -287,13 +248,7 @@ class AuthController {
         },
       });
 
-      return c.json?.(
-        {
-          status: 200,
-          message: 'Account logged out successfully',
-        },
-        200,
-      );
+      return HttpResponse(c).ok('Account logged out successfully');
     } catch (error) {
       console.error(error);
       return c.json?.(
