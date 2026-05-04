@@ -1,0 +1,53 @@
+import crypto from 'crypto';
+
+export const InternalApiKey = (app: any) => {
+  app.onBeforeHandle(({ headers, set }: { headers: Record<string, any>; set: any }) => {
+    try {
+      const rawKey = headers['x-internal-api-key'] ?? headers['X-Internal-Api-Key'];
+      const clientKey = Array.isArray(rawKey) ? rawKey[0] : rawKey;
+
+      const serverKey = process.env.INTERNAL_API_SECRET;
+
+      if (!clientKey) {
+        set.status = 401;
+        return {
+          status: 401,
+          message: 'Missing internal API key',
+        };
+      }
+
+      if (!serverKey) {
+        throw new Error('INTERNAL_API_SECRET is not defined');
+      }
+
+      const clientBuffer = Buffer.from(String(clientKey));
+      const serverBuffer = Buffer.from(String(serverKey));
+
+      if (clientBuffer.length !== serverBuffer.length) {
+        set.status = 403;
+        return {
+          status: 403,
+          message: 'Invalid internal API key',
+        };
+      }
+
+      const isMatch = crypto.timingSafeEqual(clientBuffer, serverBuffer);
+
+      if (!isMatch) {
+        set.status = 403;
+        return {
+          status: 403,
+          message: 'Invalid internal API key',
+        };
+      }
+    } catch (error) {
+      set.status = 500;
+      return {
+        status: 500,
+        message: 'Internal API authentication error',
+      };
+    }
+  });
+
+  return app;
+};
