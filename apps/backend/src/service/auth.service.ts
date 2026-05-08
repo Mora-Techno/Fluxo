@@ -42,7 +42,7 @@ class AuthService {
             first_name: auth.first_name,
             last_name: auth.last_name,
             password: hashedPassword,
-            role: auth.role || 'USER',
+            role: auth.role || 'user',
             email: auth.email,
             username: '',
             phone: auth.phone ?? '',
@@ -64,7 +64,7 @@ class AuthService {
             email: auth.email ?? '',
             phone: phone,
             username: '',
-            role: auth.role || 'USER',
+            role: auth.role || 'user',
             isVerify: true,
           },
         });
@@ -111,7 +111,7 @@ class AuthService {
 
       await prisma.userSession.deleteMany({
         where: {
-          userId: selectLogin.id,
+          userID: selectLogin.id,
         },
       });
 
@@ -123,7 +123,7 @@ class AuthService {
 
       const session = await prisma.userSession.create({
         data: {
-          userId: selectLogin.id,
+          userID: selectLogin.id,
           userAgent: c.headers['user-agent'] ?? 'unknown',
           ipAddress: ipAddress,
           expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
