@@ -16,7 +16,6 @@ import { sendOTPEmail } from '@/utils/mailer';
 import { OAuth2Client } from 'google-auth-library';
 import { env } from '@/config/env.config';
 import { sanitizeUser } from '@/utils/sanitize';
-import authService from '@/service/auth.service';
 import { HttpResponse } from '@/http';
 
 // const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
@@ -24,14 +23,65 @@ import { HttpResponse } from '@/http';
 class AuthController {
   public async register(c: AppContext) {
     try {
-      const service = await authService.RegisterService(c);
+      const auth = c.body as PickRegister;
+      const { email, phone } = auth;
+      if (!auth.first_name || !auth.last_name || !auth.password) {
+        return c.json?.({ status: 400, message: 'All fields are required' }, 400);
+      }
+
+      if (!auth.email && !auth.phone) {
+        return HttpResponse(c).badRequest();
+      }
+
+      const isAlreadyRegistered = await prisma.user.findFirst({
+        where: {
+          OR: [{ email }, { phone }],
+        },
+      });
 
       if (!service) {
         return HttpResponse(c).badGateway('service bad gateway');
       }
 
-      return HttpResponse(c).created(service, 'Succes create user');
+      const hashedPassword = await bcryptjs.hash(auth.password, 10);
+      let newUsers;
+
+      if (auth.email) {
+        const otp = generateOtp(6);
+        const otpExpiress = new Date(Date.now() + 5 * 60 * 1000);
+        newUsers = await prisma.user.create({
+          data: {
+            first_name: auth.first_name,
+            last_name: auth.last_name,
+            password: hashedPassword,
+            role: auth.role || 'USER',
+            email: auth.email,
+            phone: auth.phone ?? '',
+            otp: otp,
+            expOtp: otpExpiress,
+            isVerify: false,
+          },
+        });
+        await sendOTPEmail(email, otp);
+        return HttpResponse(c).created('Create new user using email');
+      }
+      if (phone) {
+        newUsers = await prisma.user.create({
+          data: {
+            first_name: auth.first_name,
+            last_name: auth.last_name,
+            password: hashedPassword,
+            email: auth.email ?? '',
+            phone: phone,
+            role: auth.role || 'USER',
+            isVerify: true,
+          },
+        });
+        return HttpResponse(c).created('Create new user using phone');
+      }
+      return HttpResponse(c).badRequest('Invalid register request');
     } catch (error) {
+      console.error(error);
       return HttpResponse(c).internalError(error);
     }
   }
@@ -54,6 +104,7 @@ class AuthController {
 
       return HttpResponse(c).ok(service);
     } catch (error) {
+      console.error(error);
       return HttpResponse(c).internalError(error);
     }
   }
@@ -108,13 +159,7 @@ class AuthController {
         },
       });
 
-      return c.json?.(
-        {
-          status: 200,
-          message: 'Account logged out successfully',
-        },
-        200,
-      );
+      return HttpResponse(c).ok('Account logged out successfully');
     } catch (error) {
       console.error(error);
       return c.json?.(

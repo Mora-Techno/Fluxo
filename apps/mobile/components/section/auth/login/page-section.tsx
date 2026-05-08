@@ -180,7 +180,9 @@ const LoginSection: React.FC<LoginSectionProps> = ({ ns, state, service }) => {
             <ButtonWrapper
               className="w-full"
               variant={"auth"}
-              startIcon={<Ionicons name="logo-google" size={16} />}
+              startIcon={
+                <Ionicons name="logo-google" size={16} color={ns.theme.text} />
+              }
             >
               <Text className="font-bold">Login With Goggle</Text>
             </ButtonWrapper>
