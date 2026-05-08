@@ -1,0 +1,135 @@
+version: "3.8"
+
+services:
+  pg-primary:
+    image: bitnami/postgresql:latest
+    container_name: postgres-primary
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_USERNAME=admin
+      - POSTGRESQL_PASSWORD=adminpassword
+      - POSTGRESQL_DATABASE=app_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - primary_data:/bitnami/postgresql
+    networks:
+      - fluxo-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pg-replica:
+    image: bitnami/postgresql:latest
+    container_name: postgres-replica
+    depends_on:
+      pg-primary:
+        condition: service_healthy
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_MASTER_HOST=pg-primary
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - POSTGRESQL_PASSWORD=adminpassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - replica_data:/bitnami/postgresql
+    networks:
+      - fluxo-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== BACKEND SERVICE (Bun - Write to Master) =====
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: dockerfile
+    container_name: fluxo-backend
+    depends_on:
+      pg-primary:
+        condition: service_healthy
+    environment:
+      - DB_HOST=pg-primary
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=adminpassword
+      - DB_NAME=app_database
+      - DB_SSLMODE=disable
+      - PORT=5000
+      - NODE_ENV=production
+    ports:
+      - "5000:5000"
+    networks:
+      - fluxo-network
+    restart: unless-stopped
+
+  # ===== CORE SERVICE (Go - Read from Slave) =====
+  core:
+    build:
+      context: ./apps/core
+      dockerfile: dockerfile
+    container_name: fluxo-core
+    depends_on:
+      pg-replica:
+        condition: service_healthy
+    environment:
+      - DB_HOST=pg-replica
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=adminpassword
+      - DB_NAME=app_database
+      - DB_SSLMODE=disable
+      - PORT=5001
+    ports:
+      - "5001:5001"
+    networks:
+      - fluxo-network
+    restart: unless-stopped
+
+  # ===== PYTHON SERVICE (FastAPI) =====
+  service:
+    build:
+      context: ./apps/service
+      dockerfile: dockerfile
+    container_name: fluxo-service
+    environment:
+      - PORT=4000
+    ports:
+      - "4000:4000"
+    networks:
+      - fluxo-network
+    restart: unless-stopped
+
+  # ===== WEB SERVICE (Next.js) =====
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: dockerfile
+    container_name: fluxo-web
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    networks:
+      - fluxo-network
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+networks:
+  fluxo-network:
+    driver: bridge
+
+volumes:
+  primary_data:
+  replica_data:
