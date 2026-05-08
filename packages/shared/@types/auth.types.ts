@@ -4,6 +4,7 @@ export interface Auth {
   email: string;
   first_name: string;
   last_name: string;
+  username: string;
   identifer: string;
   password: string;
   phone: string;
@@ -23,9 +24,15 @@ export interface Auth {
 export type JwtPayload = Pick<Auth, "id" | "role" | "sessionId">;
 export type PickRegister = Pick<
   Auth,
-  "email" | "first_name" | "last_name" | "password" | "role" | "phone"
+  | "email"
+  | "first_name"
+  | "last_name"
+  | "password"
+  | "role"
+  | "phone"
+  | "username"
 >;
-export type PickLogin = Pick<Auth, "email" | "password" | "phone">;
+export type PickLogin = Pick<Auth, "email" | "password" | "phone" | "username">;
 export type PickID = Pick<Auth, "id">;
 export type PickForgotPassword = Pick<Auth, "email" | "phone">;
 export type PickVerify = Pick<Auth, "email" | "otp">;

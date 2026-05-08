@@ -34,6 +34,7 @@
     },
     "extra": {
       "BACKEND_URL": "http://10.0.2.2:5000",
+      "INTERNAL_API_SECRET": "7c8a9b0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
       "router": {},
       "eas": {
         "projectId": "70a9d113-d300-46cc-a421-d7b148cc60c6"
