@@ -11,6 +11,7 @@ import { ThemeProvider } from '@/core/providers/theme.provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { composeProviders } from './composeProvinders';
 import { AuthProvider } from '@/core/providers/auth.provider';
+import { LenisProvider } from '@/core/providers/lenis.provider';
 
 const Providers = composeProviders([
   ({ children }) => <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>,
@@ -18,6 +19,7 @@ const Providers = composeProviders([
   ({ children }) => <PersistGate persistor={persistor}>{children}</PersistGate>,
   AuthProvider,
   ThemeProvider,
+  LenisProvider,
   AlertProvinder,
   ReactQueryClientProvider,
 ]);

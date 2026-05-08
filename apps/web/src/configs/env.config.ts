@@ -8,6 +8,7 @@ export const env = createEnv({
   server: {
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     AUTH_SECRET_KEY: requiredString,
+    NEXT_INTERNAL_API_SECRET: requiredString,
   },
   // Client Environment Variables Configuration
   client: {
@@ -22,6 +23,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
     NEXT_PUBLIC_BASEPATH: process.env.NEXT_PUBLIC_BASEPATH,
+    NEXT_INTERNAL_API_SECRET: process.env.NEXT_INTERNAL_API_SECRET,
   },
   // Skip Validation for the following Environment Variables
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

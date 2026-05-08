@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -24,42 +23,126 @@ model User {
   activateExp   DateTime?
   first_name    String
   last_name     String
+  home          Home[]
   session       UserSession[]
-  category Category[]
 
   @@map("users")
 }
 
 model UserSession {
   id        String   @id @default(uuid())
-  userId    String
   userAgent String
   createdAt DateTime @default(now())
   expiresAt DateTime
   ipAddress String
-  user      User     @relation(fields: [userId], references: [id])
+  userID    String
+  user      User     @relation(fields: [userID], references: [id])
 
-  @@index([userId])
+  @@index([userID])
   @@map("user_sessions")
 }
 
-model Category {
-  id String @id @default(uuid())
-  userId String
-  title String
-  desc String
-  avatarCategoryUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  user User @relation(fields: [userId],references: [id])
+model Subscription {
+  id                   String             @id @default(uuid())
+  userId               String
+  plan                 PlanType
+  status               StatusSubscription
+  current_period_start DateTime           @default(now())
+  current_period_end   DateTime
+  createdAt            DateTime           @default(now())
+
   @@index([userId])
-  @@map("Category")
+  @@map("Subscription")
 }
 
+model Home {
+  id         String   @id @default(uuid())
+  userID     String
+  latitude   Float
+  lingtitude Float
+  city       String
+  country    String
+  radius     Int
+  createdAt  DateTime @default(now())
+  device     Device[]
+  user       User     @relation(fields: [userID], references: [id], onDelete: Cascade)
 
+  @@index([userID])
+  @@map("Home")
+}
 
+model MlModel {
+  id        String   @id @default(uuid())
+  name      String
+  version   String
+  modelPath String
+  metrics   Json?
+  isActive  Boolean
+  createdAt DateTime @default(now())
+
+  @@map("MlModel")
+}
+
+model Device {
+  id               String          @id @default(uuid())
+  homeID           String
+  status           StatusDevice
+  firmware_version String
+  last_ping        DateTime
+  createdAt        DateTime        @default(now())
+  accesPoint       AccesPoint[]
+  home             Home            @relation(fields: [homeID], references: [id], onDelete: Cascade)
+  session          DeviceSession[]
+
+  @@index([homeID])
+  @@map("Device")
+}
+
+model AccesPoint {
+  id        String           @id @default(uuid())
+  deviceID  String
+  room_name String
+  status    AccesPointStatus
+  device    Device           @relation(fields: [deviceID], references: [id], onDelete: Cascade)
+
+  @@index([deviceID])
+  @@map("AccesPoint")
+}
+
+model DeviceSession {
+  id                String   @id @default(uuid())
+  deviceID          String
+  total_tokens_used Int
+  createdAt         DateTime
+  expires_at        DateTime
+  device            Device   @relation(fields: [deviceID], references: [id], onDelete: Cascade)
+
+  @@index([deviceID])
+  @@map("DeviceSession")
+}
 
 enum RoleType {
-  USER
-  ADMIN
+  user
+  developer
+}
+
+enum StatusDevice {
+  online
+  offline
+}
+
+enum PlanType {
+  monthly
+  yearly
+}
+
+enum AccesPointStatus {
+  activate
+  nonactivate
+}
+
+enum StatusSubscription {
+  active
+  past_due
+  canceled
 }

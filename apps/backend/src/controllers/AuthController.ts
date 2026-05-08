@@ -1,5 +1,5 @@
 import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+
 import {
   PickRegister,
   PickLogin,
@@ -16,6 +16,7 @@ import { sendOTPEmail } from '@/utils/mailer';
 import { OAuth2Client } from 'google-auth-library';
 import { env } from '@/config/env.config';
 import { sanitizeUser } from '@/utils/sanitize';
+import { HttpResponse } from '@/http';
 
 // const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -29,13 +30,7 @@ class AuthController {
       }
 
       if (!auth.email && !auth.phone) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'email or phone is required',
-          },
-          400,
-        );
+        return HttpResponse(c).badRequest();
       }
 
       const isAlreadyRegistered = await prisma.user.findFirst({
@@ -44,8 +39,8 @@ class AuthController {
         },
       });
 
-      if (isAlreadyRegistered) {
-        return c.json?.({ status: 400, message: 'Email already registered' }, 400);
+      if (!service) {
+        return HttpResponse(c).badGateway('service bad gateway');
       }
 
       const hashedPassword = await bcryptjs.hash(auth.password, 10);
@@ -68,14 +63,7 @@ class AuthController {
           },
         });
         await sendOTPEmail(email, otp);
-        return c.json?.(
-          {
-            status: 201,
-            message: 'successfully registered using email',
-            data: newUsers,
-          },
-          201,
-        );
+        return HttpResponse(c).created('Create new user using email');
       }
       if (phone) {
         newUsers = await prisma.user.create({
@@ -89,151 +77,35 @@ class AuthController {
             isVerify: true,
           },
         });
-        return c.json?.(
-          {
-            status: 201,
-            message: 'successfully registered using phone',
-            data: newUsers,
-          },
-          201,
-        );
+        return HttpResponse(c).created('Create new user using phone');
       }
-      return c.json?.(
-        {
-          status: 400,
-          message: 'Invalid register request',
-        },
-        400,
-      );
+      return HttpResponse(c).badRequest('Invalid register request');
     } catch (error) {
       console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'Server Internal Error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
+      return HttpResponse(c).internalError(error);
     }
   }
+  //  add endpoint username
 
+  public async addUsername(c: AppContext) {
+    try {
+      //
+    } catch (error) {
+      return HttpResponse(c).internalError(error);
+    }
+  }
   public async login(c: AppContext) {
     try {
-      const auth = c.body as PickLogin;
-      const { email, phone } = auth;
+      const service = await authService.LoginService(c);
 
-      if (!auth.password) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'password is required',
-          },
-          400,
-        );
+      if (!service) {
+        return HttpResponse(c).badGateway();
       }
 
-      if (!auth.email && !auth.phone) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'email or phone is required',
-          },
-          400,
-        );
-      }
-
-      const selectLogin = await prisma.user.findFirst({
-        where: {
-          OR: [{ email }, { phone }],
-        },
-      });
-
-      if (!selectLogin) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'email or phone not registered',
-          },
-          400,
-        );
-      }
-
-      if (!selectLogin.isVerify) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'account not verified',
-          },
-          400,
-        );
-      }
-
-      const validatePassword = await bcryptjs.compare(auth.password, selectLogin.password!);
-      if (!validatePassword) {
-        return c.json?.(
-          {
-            status: 400,
-            message: 'Email or Phone & Password Not Match',
-          },
-          400,
-        );
-      }
-
-      await prisma.userSession.deleteMany({
-        where: {
-          userId: selectLogin.id,
-        },
-      });
-
-      const ipAddress =
-        c.headers['x-forwarded-for']?.split(',')[0] ||
-        c.headers['x-real-ip'] ||
-        c.headers['cf-connecting-ip'] ||
-        'unknown';
-
-      const session = await prisma.userSession.create({
-        data: {
-          userId: selectLogin.id,
-          userAgent: c.headers['user-agent'] ?? 'unknown',
-          ipAddress: ipAddress,
-          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        },
-      });
-
-      const payload: JwtPayload = {
-        id: selectLogin.id,
-        sessionId: session.id,
-        role: selectLogin.role,
-      };
-      if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not set');
-
-      const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: '1d',
-      });
-      await prisma.user.update({
-        where: { id: selectLogin.id },
-        data: { token },
-      });
-
-      return c.json?.(
-        {
-          status: 200,
-          data: { ...sanitizeUser(selectLogin), token },
-          message: 'Login successfully',
-        },
-        200,
-      );
+      return HttpResponse(c).ok(service);
     } catch (error) {
       console.error(error);
-      return c.json?.(
-        {
-          status: 500,
-          message: 'Internal server error',
-          error: error instanceof Error ? error.message : error,
-        },
-        500,
-      );
+      return HttpResponse(c).internalError(error);
     }
   }
 
@@ -287,13 +159,7 @@ class AuthController {
         },
       });
 
-      return c.json?.(
-        {
-          status: 200,
-          message: 'Account logged out successfully',
-        },
-        200,
-      );
+      return HttpResponse(c).ok('Account logged out successfully');
     } catch (error) {
       console.error(error);
       return c.json?.(
@@ -583,144 +449,6 @@ class AuthController {
       );
     }
   }
-  // public async LoginWithGoogle(c: AppContext) {
-  //   try {
-  //     const { code } = c.body as { code: string };
-
-  //     if (!code) {
-  //       return c.json?.(
-  //         {
-  //           status: 400,
-  //           message: 'Google authorization code is required',
-  //         },
-  //         400,
-  //       );
-  //     }
-
-  //     const tokenResponse = await axios.post(
-  //       'https://oauth2.googleapis.com/token',
-  //       {
-  //         code,
-  //         client_id: process.env.GOOGLE_CLIENT_ID,
-  //         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-  //         redirect_uri: 'postmessage',
-  //         grant_type: 'authorization_code',
-  //       },
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       },
-  //     );
-
-  //     const { id_token } = tokenResponse.data;
-
-  //     if (!id_token) {
-  //       return c.json?.(
-  //         {
-  //           status: 400,
-  //           message: 'Failed to retrieve Google id_token',
-  //         },
-  //         400,
-  //       );
-  //     }
-
-  //     const ticket = await googleClient.verifyIdToken({
-  //       idToken: id_token,
-  //       audience: process.env.GOOGLE_CLIENT_ID,
-  //     });
-
-  //     const payload = ticket.getPayload();
-
-  //     if (!payload || !payload.email) {
-  //       return c.json?.(
-  //         {
-  //           status: 400,
-  //           message: 'Invalid Google token payload',
-  //         },
-  //         400,
-  //       );
-  //     }
-
-  //     const { email, name } = payload;
-
-  //     let user = await prisma.user.findUnique({
-  //       where: { email },
-  //     });
-
-  //     if (!user) {
-  //       user = await prisma.user.create({
-  //         data: {
-  //           email,
-  //           fullName: name ?? 'Google User',
-  //           role: 'PARENT',
-  //           isVerify: true,
-  //           password: null,
-  //         },
-  //       });
-  //     }
-
-  //     await prisma.userSession.deleteMany({
-  //       where: { userId: user.id },
-  //     });
-
-  //     const ipAddress =
-  //       c.headers['x-forwarded-for']?.split(',')[0] ||
-  //       c.headers['x-real-ip'] ||
-  //       c.headers['cf-connecting-ip'] ||
-  //       'unknown';
-
-  //     const session = await prisma.userSession.create({
-  //       data: {
-  //         userId: user.id,
-  //         userAgent: c.headers['user-agent'] ?? 'unknown',
-  //         ipAddress,
-  //         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-  //       },
-  //     });
-
-  //     if (!process.env.JWT_SECRET) {
-  //       throw new Error('JWT_SECRET not set');
-  //     }
-
-  //     const jwtPayload: JwtPayload = {
-  //       id: user.id,
-  //       sessionId: session.id,
-  //       role: user.role,
-  //     };
-
-  //     const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
-  //       expiresIn: '1d',
-  //     });
-
-  //     await prisma.user.update({
-  //       where: { id: user.id },
-  //       data: { token },
-  //     });
-
-  //     return c.json?.(
-  //       {
-  //         status: 200,
-  //         message: 'Login with Google successfully',
-  //         data: {
-  //           ...sanitizeUser(user),
-  //           token,
-  //         },
-  //       },
-  //       200,
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //     return c.json?.(
-  //       {
-  //         status: 500,
-  //         message: 'Server Internal Error',
-  //         error: error instanceof Error ? error.message : error,
-  //       },
-  //       500,
-  //     );
-  //   }
-  // }
 }
 
 export default new AuthController();
