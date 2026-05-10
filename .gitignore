@@ -18,3 +18,4 @@
 docker.bat
 docker.sh
 /apps/core/tmp
+/apps/models

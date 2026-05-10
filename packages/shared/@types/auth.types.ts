@@ -34,10 +34,13 @@ export type PickRegister = Pick<
 >;
 export type PickLogin = Pick<Auth, "email" | "password" | "phone" | "username">;
 export type PickID = Pick<Auth, "id">;
-export type PickForgotPassword = Pick<Auth, "email" | "phone">;
+export type PickForgotPassword = Pick<Auth, "email" | "phone" | "username">;
 export type PickVerify = Pick<Auth, "email" | "otp">;
 export type PickSendOtp = Pick<Auth, "email">;
-export type PickResetPassword = Pick<Auth, "email" | "password" | "phone">;
+export type PickResetPassword = Pick<
+  Auth,
+  "email" | "password" | "phone" | "username"
+>;
 export type PickUpdateProfile = Pick<
   Auth,
   "email" | "first_name" | "last_name" | "avaUrl" | "phone"
@@ -45,6 +48,7 @@ export type PickUpdateProfile = Pick<
 export type PickUpdatePassword = Pick<Auth, "password">;
 export type PickActiveAccount = Pick<Auth, "activateToken" | "password">;
 export type PickLoginAllReady = Pick<Auth, "token">;
+export type PickUsername = Pick<Auth, "username">;
 
 // extenst
 export type FormLogin = Pick<Auth, "identifer" | "password">;
@@ -54,5 +58,4 @@ export type FormRegister = Pick<
 >;
 
 export type FormForgotPassword = Pick<Auth, "identifer">;
-
 export type FormResend = Pick<Auth, "email">;

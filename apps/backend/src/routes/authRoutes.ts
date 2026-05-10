@@ -79,11 +79,29 @@ class AuthRouter {
         email: t.Optional(t.String({ format: 'email' })),
         phone: t.Optional(t.String()),
       }),
+      detail: {
+        tags: ['Auth'],
+        description: '',
+      },
     });
     this.authRouter.post('/reset-password', (c: AppContext) => AuthController.resetPassword(c), {
       body: t.Object({
         password: t.Required(t.String()),
       }),
+      detail: {
+        tags: ['Auth'],
+        description: 'Reset Password',
+      },
+    });
+    this.authRouter.patch('/addUsername', (c: AppContext) => AuthController.addUsername(c), {
+      beforeHandle: [verifyToken().beforeHandle],
+      body: t.Object({
+        username: t.Required(t.String()),
+      }),
+      detail: {
+        tags: ['Auth'],
+        description: 'add for new user Username',
+      },
     });
   }
 }

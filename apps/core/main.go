@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/goddtriffin/helmet"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -13,12 +14,12 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("⚠️  No .env file found")
+		log.Println(" No .env file found")
 	}
-
 	app := fiber.New()
 
-	// Connect to database
+	helmet := helmet.Default()
+	app.Use(helmet)
 	config.ConnectDB()
 
 	// Routes
@@ -26,16 +27,16 @@ func main() {
 	routes.InitialRoutes(api)
 	
 
-	// Health check endpoint
+	
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"status": "ok"})
 	})
 
-	// Start server
+	
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "5000"
+		port = "5001"
 	}
-	log.Printf("🚀 Server starting on port %s\n", port)
+	log.Printf(" Server starting on port %s\n", port)
 	log.Fatal(app.Listen(":" + port))
 }
