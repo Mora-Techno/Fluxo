@@ -8,22 +8,24 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(uuid())
-  email         String?       @unique
+  id            String         @id @default(uuid())
+  email         String?        @unique
   password      String?
-  phone         String?       @unique
+  phone         String?        @unique
   token         String?
   role          RoleType
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   otp           String?
   expOtp        DateTime?
-  isVerify      Boolean       @default(false)
+  isVerify      Boolean        @default(false)
   activateToken String?
   activateExp   DateTime?
   first_name    String
   last_name     String
+  username      String?
   home          Home[]
+  subscription  Subscription[]
   session       UserSession[]
 
   @@map("users")
@@ -44,14 +46,15 @@ model UserSession {
 
 model Subscription {
   id                   String             @id @default(uuid())
-  userId               String
+  userID               String
   plan                 PlanType
   status               StatusSubscription
   current_period_start DateTime           @default(now())
   current_period_end   DateTime
   createdAt            DateTime           @default(now())
+  user                 User               @relation(fields: [userID], references: [id])
 
-  @@index([userId])
+  @@index([userID])
   @@map("Subscription")
 }
 
@@ -59,7 +62,7 @@ model Home {
   id         String   @id @default(uuid())
   userID     String
   latitude   Float
-  lingtitude Float
+  longtitude Float
   city       String
   country    String
   radius     Int
@@ -90,7 +93,7 @@ model Device {
   firmware_version String
   last_ping        DateTime
   createdAt        DateTime        @default(now())
-  accesPoint       AccesPoint[]
+  accesPoint       AccessPoint[]
   home             Home            @relation(fields: [homeID], references: [id], onDelete: Cascade)
   session          DeviceSession[]
 
@@ -98,7 +101,7 @@ model Device {
   @@map("Device")
 }
 
-model AccesPoint {
+model AccessPoint {
   id        String           @id @default(uuid())
   deviceID  String
   room_name String

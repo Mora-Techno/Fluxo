@@ -6,18 +6,20 @@ import { cn } from "@/lib/utils";
 interface InputWithIconProps extends React.ComponentProps<typeof Input> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  startIcon?: React.ReactNode;
 }
 
 function InputWrapper({
   leftIcon,
   rightIcon,
+  startIcon,
   className,
   ...props
 }: InputWithIconProps) {
   return (
     <View className="relative w-full">
       {leftIcon && (
-        <View className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
+        <View className="pointer-events-none absolute translate-y-2.5 left-3 flex items-center z-10">
           {leftIcon}
         </View>
       )}

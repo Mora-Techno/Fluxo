@@ -6,6 +6,6 @@
   "main": "index.ts",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^25.3.3"
+    "@types/node": "^25.7.0"
   }
 }

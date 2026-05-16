@@ -1,4 +1,5 @@
 import {
+  useAddUsernameService,
   useForgotPasswordService,
   useLoginService,
   useLogutService,
@@ -7,6 +8,7 @@ import {
   useResetPasswordService,
   useVerifyService,
 } from "./state/mutation";
+import { useGetUsernameService } from "./state/query";
 
 const useAuth = () => {
   return {
@@ -18,6 +20,10 @@ const useAuth = () => {
       resend: useResendService,
       forgot: useForgotPasswordService,
       reset: useResetPasswordService,
+      addUsername: useAddUsernameService,
+    },
+    query: {
+      getUsername: useGetUsernameService,
     },
   };
 };

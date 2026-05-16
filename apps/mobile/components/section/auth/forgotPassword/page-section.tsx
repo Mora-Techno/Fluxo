@@ -1,10 +1,11 @@
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { FlatColors } from "@/core/providers/theme.provinder";
-import { FormForgotPassword } from "@repo/shared";
-
-import { View, Text } from "react-native";
+import { FormForgotPassword, kebabCaseToWords } from "@repo/shared";
+import { View } from "react-native";
+import { Text } from "@/components/ui/text";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { SelectedAuthWrapper } from "@/types/form";
 
 interface ForgotPasswordSectionProps {
   ns: {
@@ -24,11 +25,18 @@ interface ForgotPasswordSectionProps {
       onForgotPassword: () => void;
     };
   };
+  isActive: {
+    selectForgotPassword: SelectedAuthWrapper;
+    setSelectForgotPassword: React.Dispatch<
+      React.SetStateAction<SelectedAuthWrapper>
+    >;
+  };
 }
 const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({
   ns,
   state,
   service,
+  isActive,
 }) => {
   return (
     <KeyboardAwareScrollView
@@ -52,23 +60,73 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({
           style={{ marginBottom: state.isKeyboardVisible ? 20 : 40 }}
         >
           <View className="w-full gap-2">
-            <Text className="font-bold text-4xl text-primary">
-              Verifikasi Akun Anda
+            <Text className="font-extrabold text-4xl text-primary">
+              Verifikasi Your Account
             </Text>
-            <InputWrapper
-              placeholder="Masukkan Email/Nomor Hp"
-              onChangeText={(e) =>
-                state.setFormForgotPassword((prev) => ({
-                  ...prev,
-                  identifer: e,
-                }))
-              }
-            />
+
+            <Text className="font-semibold text-lg">
+              Masukkan email yang terdaftar, kami akan mengirimkan tautan
+              pemulihan
+            </Text>
+
+            <View className="w-full flex flex-row justify-between items-center gap-2">
+              <ButtonWrapper
+                className={`flex-1 ${isActive.selectForgotPassword === "email" ? "bg-primary" : "bg-background"}`}
+                variant={"auth"}
+                onPress={() => isActive.setSelectForgotPassword("email")}
+              >
+                <Text
+                  className={`font-semibold ${isActive.selectForgotPassword === "email" ? "text-background" : "text-foreground"}`}
+                >
+                  Email
+                </Text>
+              </ButtonWrapper>
+              <ButtonWrapper
+                className={`flex-1 ${isActive.selectForgotPassword === "phone" ? "bg-primary" : "bg-background"}`}
+                variant={"auth"}
+                onPress={() => isActive.setSelectForgotPassword("phone")}
+              >
+                <Text
+                  className={`font-semibold ${isActive.selectForgotPassword === "phone" ? "text-background" : "text-foreground"}`}
+                >
+                  Phone
+                </Text>
+              </ButtonWrapper>
+              <ButtonWrapper
+                className={`flex-1 ${isActive.selectForgotPassword === "username" ? "bg-primary" : "bg-background"}`}
+                variant={"auth"}
+                onPress={() => isActive.setSelectForgotPassword("username")}
+              >
+                <Text
+                  className={`font-semibold ${isActive.selectForgotPassword === "username" ? "text-background" : "text-foreground"}`}
+                >
+                  Username
+                </Text>
+              </ButtonWrapper>
+            </View>
+            <View className="w-full">
+              <Text variant={"h3"} className="text-primary">
+                {kebabCaseToWords(isActive.selectForgotPassword)}
+              </Text>
+              <InputWrapper
+                // rightIcon={}
+                placeholder="Enter "
+                onChangeText={(e) =>
+                  state.setFormForgotPassword((prev) => ({
+                    ...prev,
+                    identifer: e,
+                  }))
+                }
+              />
+            </View>
+
             <ButtonWrapper
               disabled={service.mutate.isPending}
               onPress={() => service.mutate.onForgotPassword()}
             >
-              <Text className="font-bold">Contine</Text>
+              <Text variant={"h4"} className="font-semibold text-background">
+                Contine
+              </Text>
             </ButtonWrapper>
           </View>
         </View>

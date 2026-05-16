@@ -7,7 +7,7 @@ export { metadata };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={siteConfig.locale} suppressHydrationWarning>
-      <body>
+      <body className="font-parkinsans">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

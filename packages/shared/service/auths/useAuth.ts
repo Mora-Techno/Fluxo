@@ -1,26 +1,29 @@
 import {
-  useForgotPassword,
-  useLogin,
-  useLogout,
-  useRegister,
-  useResend,
-  useResetPassword,
-  useVerifyOtp,
+  useAddUsernamePackage,
+  useForgotPasswordPackage,
+  useLoginPackage,
+  useLogoutPackage,
+  useRegisterPackage,
+  useResendPackage,
+  useResetPasswordPackage,
+  useVerifyOtpPackage,
 } from "./state/mutation";
+import { useGetUsername } from "./state/query";
 
 export function useAuthRepo() {
   return {
     mutation: {
-      login: useLogin,
-      register: useRegister,
-      logout: useLogout,
-      verify: useVerifyOtp,
-      resend: useResend,
-      forgot: useForgotPassword,
-      reset: useResetPassword,
+      login: useLoginPackage,
+      register: useRegisterPackage,
+      logout: useLogoutPackage,
+      verify: useVerifyOtpPackage,
+      resend: useResendPackage,
+      forgot: useForgotPasswordPackage,
+      reset: useResetPasswordPackage,
+      addUsername:useAddUsernamePackage
     },
     query: {
-      //
+      getUsername: useGetUsername,
     },
   };
 }

@@ -1,7 +1,8 @@
 import { ButtonWrapper } from "@/components/wrapper/ButtonWrapper";
 import { InputWrapper } from "@/components/wrapper/InputWrapper";
 import { FlatColors } from "@/core/providers/theme.provinder";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { Text } from "@/components/ui/text";
 import { FormRegister } from "@repo/shared";
 import React from "react";
 import { EyeOff } from "lucide-react-native";
@@ -66,10 +67,10 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({
             />
           </View>
 
-          <View className="w-full gap-10">
+          <View className="w-full gap-4">
             <View className="flex-row w-full gap-4">
-              <View className="flex-1">
-                <Text className="text-primary font-light">First Name</Text>
+              <View className="flex-1 gap-1">
+                <Text className="text-primary font-semibold">First Name</Text>
                 <InputWrapper
                   placeholder="joe"
                   value={state.formRegister.first_name}
@@ -81,8 +82,8 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({
                   }
                 />
               </View>
-              <View className="flex-1">
-                <Text className="text-primary font-light">Last Name</Text>
+              <View className="flex-1 gap-1">
+                <Text className="text-primary font-semibold">Last Name</Text>
                 <InputWrapper
                   placeholder="nardi"
                   value={state.formRegister.last_name}
@@ -96,38 +97,57 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({
               </View>
             </View>
 
-            <InputWrapper
-              placeholder="Email or Phone Number"
-              value={state.formRegister.identifer}
-              onChangeText={(e) =>
-                state.setFormRegister((prev) => ({
-                  ...prev,
-                  identifer: e,
-                }))
-              }
-            />
-            <InputWrapper
-              placeholder="Password"
-              secureTextEntry={!state.switch}
-              rightIcon={
-                <TouchableOpacity
-                  onPress={() => state.setSwitch(!state.switch)}
-                >
-                  {state.switch ? (
-                    <Eye className={ns.theme.foreground} />
-                  ) : (
-                    <EyeOff className={ns.theme.foreground} />
-                  )}
-                </TouchableOpacity>
-              }
-              value={state.formRegister.password}
-              onChangeText={(e) =>
-                state.setFormRegister((prev) => ({
-                  ...prev,
-                  password: e,
-                }))
-              }
-            />
+            <View className="gap-1">
+              <Text className="font-semibold text-primary">Email</Text>
+              <InputWrapper
+                placeholder="Fluxo@gmail.com"
+                value={state.formRegister.email}
+                onChangeText={(e) =>
+                  state.setFormRegister((prev) => ({
+                    ...prev,
+                    email: e,
+                  }))
+                }
+              />
+            </View>
+            <View className="gap-1">
+              <Text className="font-semibold text-primary">Phone</Text>
+              <InputWrapper
+                placeholder="0812345678"
+                value={state.formRegister.phone}
+                onChangeText={(e) =>
+                  state.setFormRegister((prev) => ({
+                    ...prev,
+                    phone: e,
+                  }))
+                }
+              />
+            </View>
+            <View className="gap-1">
+              <Text className="font-semibold text-primary">Password</Text>
+              <InputWrapper
+                placeholder="*****"
+                secureTextEntry={!state.switch}
+                rightIcon={
+                  <TouchableOpacity
+                    onPress={() => state.setSwitch(!state.switch)}
+                  >
+                    {state.switch ? (
+                      <Eye color={ns.theme.foreground} />
+                    ) : (
+                      <EyeOff color={ns.theme.foreground} />
+                    )}
+                  </TouchableOpacity>
+                }
+                value={state.formRegister.password}
+                onChangeText={(e) =>
+                  state.setFormRegister((prev) => ({
+                    ...prev,
+                    password: e,
+                  }))
+                }
+              />
+            </View>
           </View>
           <View className="w-full gap-10 flex justify-center">
             <ButtonWrapper

@@ -10,6 +10,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Image } from "expo-image";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Eye, EyeOff } from "lucide-react-native";
+import { SelectedAuth } from "@/types/form";
+import { kebabCaseToWords } from "@repo/shared";
 
 interface LoginSectionProps {
   ns: {
@@ -27,8 +29,8 @@ interface LoginSectionProps {
     isKeyboardVisible: boolean;
     setIsKeyboardVisible: React.Dispatch<React.SetStateAction<boolean>>;
     lottieSize: any;
-    render: "email" | "phone";
-    setRender: React.Dispatch<React.SetStateAction<"email" | "phone">>;
+    render: SelectedAuth;
+    setRender: React.Dispatch<React.SetStateAction<SelectedAuth>>;
     switching: boolean;
     setSwitching: React.Dispatch<React.SetStateAction<boolean>>;
   };
@@ -75,95 +77,129 @@ const LoginSection: React.FC<LoginSectionProps> = ({ ns, state, service }) => {
               Your sentient home is waiting
             </Text>
           </View>
-          <View className=" flex gap-2 justify-between flex-row items-center px-14 ">
-            <View className="">
-              <ButtonWrapper
-                className={`w-full ${state.render === "email" ? "bg-primary" : "bg-secondary"}`}
-                onPress={() => state.setRender("email")}
-                startIcon={
-                  <Ionicons
-                    name="mail"
-                    size={16}
-                    color={`${state.render === "email" ? ns.theme.secondary : ns.theme.foreground}`}
-                  />
-                }
+          <View className=" flex w-full gap-2 justify-between flex-row items-center  ">
+            <ButtonWrapper
+              className={`flex-1 ${state.render === "username" ? "bg-primary" : "bg-secondary"}`}
+              onPress={() => state.setRender("username")}
+              startIcon={
+                <Ionicons
+                  name="person"
+                  size={16}
+                  color={`${state.render === "username" ? ns.theme.secondary : ns.theme.foreground}`}
+                />
+              }
+            >
+              <Text
+                variant={"h1"}
+                className={`font-semibold ${
+                  state.render === "username"
+                    ? "text-background"
+                    : "text-foreground"
+                }`}
               >
-                <Text
-                  variant={"h1"}
-                  className={
-                    state.render === "email"
-                      ? "text-background"
-                      : "text-foreground"
-                  }
-                >
-                  Email
-                </Text>
-              </ButtonWrapper>
-            </View>
-            <View className="">
-              <ButtonWrapper
-                onPress={() => state.setRender("phone")}
-                className={`w-full ${state.render === "phone" ? "bg-primary" : "bg-secondary"}`}
-                startIcon={
-                  <Ionicons
-                    name="phone-portrait"
-                    size={16}
-                    color={`${state.render === "phone" ? ns.theme.secondary : ns.theme.foreground}`}
-                  />
-                }
+                Username
+              </Text>
+            </ButtonWrapper>
+
+            <ButtonWrapper
+              onPress={() => state.setRender("phone")}
+              className={`flex-1 ${state.render === "phone" ? "bg-primary" : "bg-secondary"}`}
+              startIcon={
+                <Ionicons
+                  name="phone-portrait"
+                  size={16}
+                  color={`${state.render === "phone" ? ns.theme.secondary : ns.theme.foreground}`}
+                />
+              }
+            >
+              <Text
+                variant={"h1"}
+                className={`font-semibold ${
+                  state.render === "phone"
+                    ? "text-background"
+                    : "text-foreground"
+                }`}
               >
-                <Text
-                  variant={"h1"}
-                  className={
-                    state.render === "email"
-                      ? "text-foreground"
-                      : "text-background"
-                  }
-                >
-                  Phone
-                </Text>
-              </ButtonWrapper>
-            </View>
+                Phone
+              </Text>
+            </ButtonWrapper>
           </View>
 
           <View className=" gap-6 mt-4 w-full">
-            <InputWrapper
-              placeholder={
-                state.render === "email" ? "fluxo@gmail.com" : "082345678"
-              }
-              className="w-full  "
-              value={state.formLogin.identifer}
-              onChangeText={(e) =>
-                state.setFormLogin((prev) => ({
-                  ...prev,
-                  identifer: e,
-                }))
-              }
-            />
-            <InputWrapper
-              placeholder="password"
-              secureTextEntry={!state.switching}
-              value={state.formLogin.password}
-              rightIcon={
-                <TouchableOpacity
-                  onPress={() => state.setSwitching(!state.switching)}
-                >
-                  {state.switching ? (
-                    <Eye className={ns.theme.foreground} />
+            <View className="gap-1">
+              <Text variant={"h4"} className="font-semibold text-primary">
+                {kebabCaseToWords(state.render)}
+              </Text>
+              <InputWrapper
+                placeholder={
+                  state.render === "username" ? "Fluxo" : "082345678"
+                }
+                leftIcon={
+                  state.render === "username" ? (
+                    <Ionicons
+                      name="person"
+                      size={16}
+                      color={`${state.render === "username" ? ns.theme.foreground : ns.theme.background}`}
+                    />
                   ) : (
-                    <EyeOff className={ns.theme.foreground} />
-                  )}
-                </TouchableOpacity>
-              }
-              onChangeText={(e) =>
-                state.setFormLogin((prev) => ({
-                  ...prev,
-                  password: e,
-                }))
-              }
-            />
-            <Link href={"/forgotPassword/page"} className="w-full">
-              <Text className="w-full text-end  text-lg  text-primary">
+                    <Ionicons
+                      name="phone-portrait"
+                      size={16}
+                      color={`${state.render === "phone" ? ns.theme.foreground : ns.theme.background}`}
+                    />
+                  )
+                }
+                className="w-full"
+                value={
+                  state.render === "username"
+                    ? state.formLogin.username
+                    : state.formLogin.phone
+                }
+                onChangeText={(e) =>
+                  state.setFormLogin((prev) => ({
+                    ...prev,
+                    [state.render]: e,
+                  }))
+                }
+              />
+            </View>
+            <View className="gap-1">
+              <Text variant={"h4"} className="font-semibold text-primary">
+                Password
+              </Text>
+              <InputWrapper
+                placeholder="Password"
+                secureTextEntry={!state.switching}
+                value={state.formLogin.password}
+                leftIcon={
+                  <Ionicons
+                    name="lock-closed"
+                    color={`${ns.theme.foreground}`}
+                    size={16}
+                  />
+                }
+                rightIcon={
+                  <TouchableOpacity
+                    onPress={() => state.setSwitching(!state.switching)}
+                  >
+                    {state.switching ? (
+                      <Eye color={ns.theme.foreground} />
+                    ) : (
+                      <EyeOff color={ns.theme.foreground} />
+                    )}
+                  </TouchableOpacity>
+                }
+                onChangeText={(e) =>
+                  state.setFormLogin((prev) => ({
+                    ...prev,
+                    password: e,
+                  }))
+                }
+              />
+            </View>
+
+            <Link href={"/forgotPassword/page"} className="w-full text-right">
+              <Text variant={"h4"} className="text-primary">
                 Forgot Password?
               </Text>
             </Link>
@@ -176,15 +212,25 @@ const LoginSection: React.FC<LoginSectionProps> = ({ ns, state, service }) => {
               <Text className="font-bold">Login</Text>
             </ButtonWrapper>
           </View>
-          <View className="w-full flex items-center my-2">
+          <View className="w-full flex flex-row justify-center   gap-2 m-2 overflow-x-hidden ">
             <ButtonWrapper
-              className="w-full"
+              className="flex-1"
               variant={"auth"}
               startIcon={
                 <Ionicons name="logo-google" size={16} color={ns.theme.text} />
               }
             >
               <Text className="font-bold">Login With Goggle</Text>
+            </ButtonWrapper>
+
+            <ButtonWrapper
+              className="flex-1"
+              variant={"auth"}
+              startIcon={
+                <Ionicons name="logo-apple" size={16} color={ns.theme.text} />
+              }
+            >
+              <Text className="font-bold">Login With Apple</Text>
             </ButtonWrapper>
           </View>
           <View className="mt-5">
@@ -194,6 +240,12 @@ const LoginSection: React.FC<LoginSectionProps> = ({ ns, state, service }) => {
                 <Text className="text-primary font-bold">Create Profile</Text>
               </Link>
             </Text>
+          </View>
+          {/* digunakan ketika develop */}
+          <View className="mt-5">
+            <Link href={"/(auth)/addUsername/page"}>
+              <Text className="text-primary font-bold">Akses Cepat</Text>
+            </Link>
           </View>
         </View>
       </View>

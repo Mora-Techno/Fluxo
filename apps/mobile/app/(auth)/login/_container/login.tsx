@@ -4,23 +4,22 @@ import { useAppNameSpace } from "@/hooks/costum/namespace";
 import { useEffect, useMemo, useState } from "react";
 import { FormLogin } from "@repo/shared";
 import { useServiceMobile } from "@/hooks/service/module/useService";
+import { SelectedAuth } from "@/types/form";
 
 const LoginContainer = () => {
   const namespace = useAppNameSpace();
   const service = useServiceMobile();
-  // type
-  type render = "email" | "phone";
-
   // mutate
   const loginMutation = service.auth.mutation.login();
   //state
   const [formLogin, setFormLogin] = useState<FormLogin>({
-    identifer: "",
+    phone: "",
+    username: "",
     password: "",
   });
 
   const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
-  const [render, setRender] = useState<render>("email");
+  const [render, setRender] = useState<SelectedAuth>("username");
   const [switching, setSwitching] = useState<boolean>(false);
   // handler
   const handlerLogin = async () => {

@@ -8,17 +8,14 @@ export default function PrivateProviders({
 }: {
   children: React.ReactNode;
 }) {
-  const currentUser = useAppSelector(
-    (state) => state.auth.currentUser?.user.token
-  );
-  const isAuth = currentUser;
+  const token = useAppSelector((state) => state.auth.token);
+  const isAuth = token;
 
-  // useEffect(() => {
-  //   if (!isAuth) {
-  //     // Redirect to login if not authenticated
-  //     router.replace("/(auth)/login" as any);
-  //   }
-  // }, [isAuth]);
+  useEffect(() => {
+    if (!isAuth) {
+      router.replace("/(auth)/login" as any);
+    }
+  }, [isAuth]);
 
   return <>{children}</>;
 }
