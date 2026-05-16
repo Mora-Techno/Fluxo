@@ -7,7 +7,7 @@ import {
   PickRegister,
   PickResetPassword,
   PickSendOtp,
-  PickUsername,
+  PickAddUsername,
   PickVerify,
 } from '@repo/shared';
 import prisma from 'prisma/client';
@@ -22,12 +22,8 @@ class AuthService {
     try {
       const auth = c.body as PickRegister;
       const { email, phone } = auth;
-      if (!auth.first_name || !auth.last_name || !auth.password) {
+      if (!auth.first_name || !auth.last_name || !auth.password || !auth.email || !auth.phone) {
         return c.json?.({ status: 400, message: 'All fields are required' }, 400);
-      }
-
-      if (!auth.email && !auth.phone) {
-        return HttpResponse(c).unauthorized();
       }
 
       const isAlreadyRegistered = await prisma.user.findFirst({
@@ -41,44 +37,28 @@ class AuthService {
       }
 
       const hashedPassword = await bcryptjs.hash(auth.password, 10);
-      let newUsers;
 
-      if (auth.email) {
-        const otp = generateOtp(6);
-        const otpExpiress = new Date(Date.now() + 5 * 60 * 1000);
-        newUsers = await prisma.user.create({
-          data: {
-            first_name: auth.first_name,
-            last_name: auth.last_name,
-            password: hashedPassword,
-            role: auth.role || 'user',
-            email: auth.email,
-            username: '',
-            phone: auth.phone ?? '',
-            otp: otp,
-            expOtp: otpExpiress,
-            isVerify: false,
-          },
-        });
+      const otp = generateOtp(6);
+      const otpExpiress = new Date(Date.now() + 5 * 60 * 1000);
+      const Query = await prisma.user.create({
+        data: {
+          first_name: auth.first_name,
+          last_name: auth.last_name,
+          password: hashedPassword,
+          role: auth.role || 'user',
+          email: auth.email,
+          username: '',
+          phone: auth.phone,
+          otp: otp,
+          expOtp: otpExpiress,
+          isVerify: false,
+        },
+      });
+      await sendOTPEmail(email, otp);
 
-        await sendOTPEmail(email, otp);
-      }
-      if (auth.phone) {
-        newUsers = await prisma.user.create({
-          data: {
-            first_name: auth.first_name,
-            last_name: auth.last_name,
-            password: hashedPassword,
-            email: auth.email ?? '',
-            phone: phone,
-            username: '',
-            role: auth.role || 'user',
-            isVerify: true,
-          },
-        });
-      }
+      const result = Query;
 
-      return newUsers;
+      return result;
     } catch (error) {
       return HttpResponse(c).internalError();
     }
@@ -87,19 +67,19 @@ class AuthService {
   public async LoginService(c: AppContext) {
     try {
       const auth = c.body as PickLogin;
-      const { email, phone, username } = auth;
+      const { phone, username } = auth;
 
       if (!auth.password) {
         return HttpResponse(c).notFound('password not found');
       }
 
-      if (!auth.email && !auth.phone && !auth.username) {
+      if (!auth.phone && !auth.username) {
         return HttpResponse(c).badRequest('email, phone & username is required');
       }
 
       const selectLogin = await prisma.user.findFirst({
         where: {
-          OR: [{ email }, { phone }, { username }],
+          OR: [{ phone }, { username }],
         },
       });
 
@@ -154,18 +134,15 @@ class AuthService {
 
       const buildRespone = { ...sanitizeUser(selectLogin), token };
 
-      return { buildRespone };
+      return buildRespone;
     } catch (error) {
       return HttpResponse(c).internalError(error);
     }
   }
   public async LogoutService(c: AppContext, id: string) {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.user.findFirst({
         where: { id: id },
-        select: {
-          id: true,
-        },
       });
 
       if (!user) {
@@ -182,20 +159,29 @@ class AuthService {
       });
 
       if (!session) {
-        return HttpResponse(c).notFound();
+        return HttpResponse(c).badRequest('session not found');
       }
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { token: null },
-      });
-
-      await prisma.userSession.delete({
+      const updateUser = await prisma.user.update({
         where: {
-          id: session.id,
-          userId: user.id,
+          id: id,
+        },
+        data: {
+          token: null,
         },
       });
+
+      if (!updateUser) {
+        return HttpResponse(c).badRequest('can`t not remove token ');
+      }
+
+      const deleteSession = await prisma.userSession.delete({
+        where: {
+          id: session.id,
+        },
+      });
+
+      return deleteSession;
     } catch (error) {
       return HttpResponse(c).internalError(error);
     }
@@ -235,9 +221,9 @@ class AuthService {
       return HttpResponse(c).internalError();
     }
   }
-  public async addUsernameService(c: AppContext, id: string) {
+  public async addUsernameService(c: AppContext) {
     try {
-      const body = c.body as PickUsername;
+      const body = c.body as PickAddUsername;
 
       if (!body) {
         return HttpResponse(c).notFound();
@@ -245,7 +231,8 @@ class AuthService {
 
       const update = await prisma.user.update({
         where: {
-          id: id,
+          phone: body.phone,
+          email: body.email,
         },
         data: {
           username: body.username,
@@ -263,12 +250,13 @@ class AuthService {
   public async VerifyOtpService(c: AppContext) {
     try {
       const auth = c.body as PickVerify;
-      if (!auth.email || !auth.otp) {
+      if (!auth.email || !auth.otp || !auth.phone) {
         return HttpResponse(c).notFound();
       }
       const user = await prisma.user.findFirst({
         where: {
           email: auth.email,
+          phone: auth.phone,
           otp: auth.otp,
         },
       });
@@ -353,6 +341,24 @@ class AuthService {
       });
 
       return newPassword;
+    } catch (error) {
+      return HttpResponse(c).internalError(error);
+    }
+  }
+  public async GetUsernameService(c: AppContext, querys: string) {
+    try {
+      const query = await prisma.user.findFirst({
+        where: {
+          username: querys,
+        },
+        select: {
+          username: true,
+        },
+      });
+
+      const result = query;
+
+      return result;
     } catch (error) {
       return HttpResponse(c).internalError(error);
     }

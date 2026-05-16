@@ -1,13 +1,5 @@
-import bcryptjs from 'bcryptjs';
-
-import { JwtPayload, PickResetPassword } from '@repo/shared';
-import prisma from 'prisma/client';
+import { JwtPayload } from '@repo/shared';
 import { AppContext } from '@/contex/index';
-import { generateOtp } from '@/utils/generate-otp';
-import { sendOTPEmail } from '@/utils/sendOTP';
-import { OAuth2Client } from 'google-auth-library';
-import { env } from '@/config/env.config';
-import { sanitizeUser } from '@/utils/sanitize';
 import { HttpResponse } from '@/http';
 import authService from '@/service/auth.service';
 
@@ -16,13 +8,17 @@ import authService from '@/service/auth.service';
 class AuthController {
   public async register(c: AppContext) {
     try {
-      const serive = await authService.RegisterService(c);
+      const service = await authService.RegisterService(c);
 
-      if (!serive) {
+      if (!service) {
         return HttpResponse(c).badGateway();
       }
 
-      return HttpResponse(c).created(serive, 'successfully create users');
+      if (service instanceof Response) {
+        return service;
+      }
+
+      return HttpResponse(c).ok(service, 'successfully create users');
     } catch (error) {
       console.error(error);
       return HttpResponse(c).internalError(error);
@@ -31,13 +27,7 @@ class AuthController {
 
   public async addUsername(c: AppContext) {
     try {
-      const users = c.user as JwtPayload;
-
-      if (!users) {
-        return HttpResponse(c).unauthorized();
-      }
-
-      const service = await authService.addUsernameService(c, users.id);
+      const service = await authService.addUsernameService(c);
 
       if (!service) {
         return HttpResponse(c).badGateway();
@@ -51,6 +41,10 @@ class AuthController {
   public async login(c: AppContext) {
     try {
       const service = await authService.LoginService(c);
+
+      if (service instanceof Response) {
+        return service;
+      }
 
       if (!service) {
         return HttpResponse(c).badGateway();
@@ -72,6 +66,10 @@ class AuthController {
       }
 
       const service = await authService.LogoutService(c, users.id);
+
+      if (service instanceof Response) {
+        return service;
+      }
 
       if (!service) {
         return HttpResponse(c).badGateway();
@@ -99,6 +97,11 @@ class AuthController {
   public async verifyOtp(c: AppContext) {
     try {
       const service = await authService.VerifyOtpService(c);
+
+      if (service instanceof Response) {
+        return service;
+      }
+
       if (!service) {
         return HttpResponse(c).badRequest('Service bad request');
       }
@@ -127,6 +130,21 @@ class AuthController {
       if (!service) {
         return HttpResponse(c).badRequest();
       }
+      return HttpResponse(c).ok(service);
+    } catch (error) {
+      return HttpResponse(c).internalError(error);
+    }
+  }
+
+  public async getUsername(c: AppContext) {
+    try {
+      const { username } = c.query as { username: string };
+      const service = await authService.GetUsernameService(c, username);
+
+      if (service instanceof Response) {
+        return service;
+      }
+
       return HttpResponse(c).ok(service);
     } catch (error) {
       return HttpResponse(c).internalError(error);

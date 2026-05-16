@@ -14,11 +14,12 @@ const RegisterContainer = () => {
 
   //state
   const [formRegister, setFormRegister] = useState<FormRegister>({
-    identifer: "",
+    email: "",
+    phone: "",
     first_name: "",
     last_name: "",
     password: "",
-    role: "USER",
+    role: "user",
   });
 
   const [switching, setSwitching] = useState<boolean>(false);
@@ -38,7 +39,7 @@ const RegisterContainer = () => {
       setIsKeyboardVisible(false),
     );
     return () => {
-      showListener.remove(), hideListener.remove();
+      (showListener.remove(), hideListener.remove());
     };
   }, []);
 

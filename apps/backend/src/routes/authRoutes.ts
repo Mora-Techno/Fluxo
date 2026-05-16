@@ -21,7 +21,7 @@ class AuthRouter {
   private routes() {
     this.authRouter.post('/', (c: AppContext) => AuthController.login(c), {
       body: t.Object({
-        email: t.Optional(t.String({ format: 'email' })),
+        username: t.Optional(t.String()),
         phone: t.Optional(t.String()),
         password: t.Required(t.String()),
       }),
@@ -32,8 +32,8 @@ class AuthRouter {
     });
     this.authRouter.post('/register', (c: AppContext) => AuthController.register(c), {
       body: t.Object({
-        email: t.Optional(t.String({ format: 'email' })),
-        phone: t.Optional(t.String()),
+        email: t.Required(t.String({ format: 'email' })),
+        phone: t.Required(t.String()),
         first_name: t.Required(t.String()),
         last_name: t.Required(t.String()),
         password: t.Required(t.String()),
@@ -65,8 +65,8 @@ class AuthRouter {
 
     this.authRouter.post('/verifyOtp', (c: AppContext) => AuthController.verifyOtp(c), {
       body: t.Object({
-        email: t.Optional(t.String({ format: 'email' })),
-        phone: t.Optional(t.String()),
+        email: t.Required(t.String({ format: 'email' })),
+        phone: t.Required(t.String()),
         otp: t.Required(t.String()),
       }),
       detail: {
@@ -94,15 +94,17 @@ class AuthRouter {
       },
     });
     this.authRouter.patch('/addUsername', (c: AppContext) => AuthController.addUsername(c), {
-      beforeHandle: [verifyToken().beforeHandle],
       body: t.Object({
         username: t.Required(t.String()),
+        email: t.Required(t.String()),
+        phone: t.Required(t.String()),
       }),
       detail: {
         tags: ['Auth'],
         description: 'add for new user Username',
       },
     });
+    this.authRouter.get('/username', (c: AppContext) => AuthController.getUsername(c));
   }
 }
 

@@ -74,7 +74,7 @@ const VerifyOtpSection: React.FC<VerifyOtpSectionProps> = ({
           <Text className="text-sm text-muted-foreground text-center px-4">
             Silakan masukkan 6 digit kode verifikasi yang telah dikirim ke Email
             ...
-            {}
+            {service.params.hash ?? ""}
           </Text>
         </View>
 

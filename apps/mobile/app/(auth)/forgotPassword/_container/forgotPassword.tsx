@@ -5,6 +5,7 @@ import { FormForgotPassword } from "@repo/shared";
 import { useState } from "react";
 import { Keyboard, View } from "react-native";
 import { useEffect } from "react";
+import { SelectedAuthWrapper } from "@/types/form";
 
 const ForgotPasswordContainer = () => {
   const ns = useAppNameSpace();
@@ -17,8 +18,10 @@ const ForgotPasswordContainer = () => {
     useState<FormForgotPassword>({
       identifer: "",
     });
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
 
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
+  const [selectForgotPassword, setSelectForgotPassword] =
+    useState<SelectedAuthWrapper>("email");
   const handleForgotPassword = async () => {
     await forgotPasswordMutate.ForgotPassword(formForgotPassword);
   };
@@ -53,6 +56,10 @@ const ForgotPasswordContainer = () => {
             isPending: forgotPasswordMutate.isPending,
             onForgotPassword: handleForgotPassword,
           },
+        }}
+        isActive={{
+          selectForgotPassword: selectForgotPassword,
+          setSelectForgotPassword: setSelectForgotPassword,
         }}
       />
     </View>

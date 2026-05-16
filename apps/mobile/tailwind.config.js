@@ -9,6 +9,15 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Parkinsans-Regular"],
+        light: ["Parkinsans-Light"],
+        normal: ["Parkinsans-Regular"],
+        medium: ["Parkinsans-Medium"],
+        semibold: ["Parkinsans-SemiBold"],
+        bold: ["Parkinsans-Bold"],
+        extrabold: ["Parkinsans-ExtraBold"],
+      },
       colors: {
         background: "rgb(var(--background) / <alpha-value>)",
         foreground: "rgb(var(--foreground) / <alpha-value>)",

@@ -20,7 +20,8 @@ const VerifyOtpContainer = () => {
 
   //state
   const [formVerifify, setFormVerify] = useState<PickVerify>({
-    email: params.identifer,
+    email: params.email,
+    phone: params.phone,
     otp: "",
   });
 
@@ -28,8 +29,8 @@ const VerifyOtpContainer = () => {
   const [colldown, setColldown] = useState<number>(0);
 
   // utils
-  const emailer = params.identifer ?? "";
-  const hash = emailer.slice(10);
+  const emailer = params.email ?? "";
+  const hash = emailer.slice(4);
 
   // handler
   const handleVerify = async () => {
@@ -40,12 +41,17 @@ const VerifyOtpContainer = () => {
       if (params.point === "register") {
         ns.router.push({
           pathname: params.target,
+          params: {
+            email: formVerifify.email,
+            phone: formVerifify.phone,
+          },
         });
       } else {
+        // disini belum fix
         ns.router.push({
           pathname: params.target,
           params: {
-            identifer: params.identifer,
+            identifer: params.email,
             target: "/(auth)/login/page",
           },
         });
@@ -58,7 +64,7 @@ const VerifyOtpContainer = () => {
   const handleResend = async () => {
     if (resendMutation.isPending) return false;
     try {
-      await resendMutation.Resend({ email: params.identifer });
+      await resendMutation.Resend({ email: params.email });
 
       setColldown(300);
     } catch (error) {
